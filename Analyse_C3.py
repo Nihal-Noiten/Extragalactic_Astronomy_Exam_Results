@@ -32,6 +32,17 @@ plt.rcParams.update({
 #######################################################################################################
 #######################################################################################################
 
+if len(sys.argv) > 2:
+	sys.exit('ARGV ERROR, TRY:   python   Analyse_C3.py'+'\n'+'ARGV ERROR, TRY:   python   Analyse_C3.py   savesnaps=Y/N'+'\n')
+
+if len(sys.argv) == 1:
+	save = 'savesnaps=N'
+elif len(sys.argv) == 2:
+	save = sys.argv[1]
+
+#######################################################################################################
+#######################################################################################################
+
 # FUNCTIONS
 
 # The tree inverse CDFs for the homogeneous sphere:
@@ -239,6 +250,8 @@ M_tot = 0
 for i in range(I):
 	M_tot += M[i,0]
 
+rho = M_tot / ( 4. * np.pi / 3. * a**2)
+
 print()
 print('M_tot  = {:.0f} Msun'.format(M_tot))
 print('m_i    = {:.0f}     Msun'.format(M[37,0]))
@@ -354,7 +367,7 @@ tt = [0, int(np.floor(NT/4)), int(np.floor(NT/3)), int(np.floor(NT/2))]
 for i in range(4):
 	ttt = tt[i]
 	ax_phi[i].grid(linestyle=':', which='both')
-	# ax_phi[i].set_xlim(0, a) # lim_3d
+	ax_phi[i].set_xlim(0,None) # lim_3d
 	# ax_phi[i].set_ylim(-4e12,0)
 	# ax_phi[i].set_aspect(t_max / 4e12)
 	ax_phi[i].set_title('\nPotential at $t$ = {:.3f} Myr\n'.format(T[ttt]))
@@ -363,6 +376,7 @@ for i in range(4):
 	ax_phi[i].scatter(X[:,0,ttt], P[:,ttt], color='lightgrey', s=0.5, label=r'$\Phi(r)\,:\;simulation$')
 	# ax_phi[i].plot(rrr, fff, color='black' , markersize=1, label=r'$\Phi(r)\,:\;theory$')
 	# ax_phi[i].legend(frameon=True, loc=4)
+ax_phi[3].set_ylim(None,0)
 
 fig_Phi.tight_layout()
 
@@ -501,7 +515,7 @@ tt = [0, int(np.floor(NT/4)), int(np.floor(NT/3)), int(np.floor(NT/2))]
 for i in range(4):
 	ttt = tt[i]
 	ax_phiCM[i].grid(linestyle=':', which='both')
-	# ax_phiCM[i].set_xlim(0, a) # lim_3d
+	ax_phiCM[i].set_xlim(0,None) # lim_3d
 	# ax_phiCM[i].set_ylim(-4e12,0)
 	# ax_phiCM[i].set_aspect(t_max / 4e12)
 	ax_phiCM[i].set_title('\nPotential at $t$ = {:.3f} Myr\n'.format(T[ttt]))
@@ -510,6 +524,7 @@ for i in range(4):
 	ax_phiCM[i].scatter(X[:,0,ttt], P[:,ttt], color='lightgrey', s=0.5, label=r'$\Phi(r)\,:\;simulation$')
 	# ax_phiCM[i].plot(rrr, fff, color='black' , markersize=1, label=r'$\Phi(r)\,:\;theory$')
 	# ax_phiCM[i].legend(frameon=True, loc=4)
+ax_phiCM[3].set_ylim(None,0)
 
 fig_PhiCM.tight_layout()
 
@@ -522,41 +537,42 @@ print()
 ##################################################################################################
 ##################################################################################################
 
-time_snaps_1 = timer()
+if save == 'savesnaps=Y':
+	time_snaps_1 = timer()
 
-for t in range(len(T)):
-	snap = plt.figure(figsize=(10,10))
-	ax_s = snap.add_subplot(111, projection='3d')
-	ax_s.set_xlim(-lim_3d, +lim_3d)
-	ax_s.set_ylim(-lim_3d, +lim_3d)
-	ax_s.set_zlim(-lim_3d, +lim_3d)
-	# ax_s.xaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
-	# ax_s.yaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
-	# ax_s.zaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
-	ax_s.set_xlabel(r"$x\;$[pc]")
-	ax_s.set_ylabel(r"$y\;$[pc]")
-	ax_s.set_zlabel(r"$z\;$[pc]")
-	ax_s.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-	ax_s.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-	ax_s.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-	ax_s.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-	ax_s.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-	ax_s.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-	ax_s.set_title('$t = {:.3f}$ Myr\n'.format(T[t]))
+	for t in range(len(T)):
+		snap = plt.figure(figsize=(10,10))
+		ax_s = snap.add_subplot(111, projection='3d')
+		ax_s.set_xlim(-lim_3d, +lim_3d)
+		ax_s.set_ylim(-lim_3d, +lim_3d)
+		ax_s.set_zlim(-lim_3d, +lim_3d)
+		# ax_s.xaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
+		# ax_s.yaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
+		# ax_s.zaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
+		ax_s.set_xlabel(r"$x\;$[pc]")
+		ax_s.set_ylabel(r"$y\;$[pc]")
+		ax_s.set_zlabel(r"$z\;$[pc]")
+		ax_s.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+		ax_s.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+		ax_s.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+		ax_s.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+		ax_s.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+		ax_s.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+		ax_s.set_title('$t = {:.3f}$ Myr\n'.format(T[t]))
 
-	for i in range(I):
-		ax_s.scatter(X[i,1,t] , X[i,2,t] , X[i,3,t] , s=0.05 , color='darkred')
-		
-	snap.savefig("C3_Snaps/snapshot_{:d}.png".format(t), bbox_inches='tight')
-	plt.close(snap)
-	stdout.write("\rSaving movie snapshots:     progress = {:3.2f} %".format(t/len(T)*100.))
-stdout.write("\rSaved all movie snapshots:  progress = {:3.2f} % \n".format(100.))
+		for i in range(I):
+			ax_s.scatter(X[i,1,t] , X[i,2,t] , X[i,3,t] , s=0.05 , color='darkred')
 
-time_snaps_2 = timer()
+		snap.savefig("C3_Snaps/snapshot_{:d}.png".format(t), bbox_inches='tight')
+		plt.close(snap)
+		stdout.write("\rSaving movie snapshots:     progress = {:3.2f} %".format(t/len(T)*100.))
+	stdout.write("\rSaved all movie snapshots:  progress = {:3.2f} % \n".format(100.))
 
-print()
-print("Snapshots creation time [hh/mm/ss] = {:}".format(datetime.timedelta(seconds = time_snaps_2 - time_snaps_1)))
-print()
+	time_snaps_2 = timer()
+
+	print()
+	print("Snapshots creation time [hh/mm/ss] = {:}".format(datetime.timedelta(seconds = time_snaps_2 - time_snaps_1)))
+	print()
 
 ##################################################################################################
 ##################################################################################################
