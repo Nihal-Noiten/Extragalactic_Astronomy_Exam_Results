@@ -580,6 +580,7 @@ fig_L , ax_L = plt.subplots(figsize=(6,6))
 
 l = np.zeros((I,4,NT))
 l_tot = np.zeros((4,NT))
+l_mean = np.zeros(NT)
 for t in range(NT):
 	for i in range(I):
 		l[i,1,t] = X[i,2,t] * V[i,3,t] - X[i,3,t] * V[i,2,t]
@@ -589,7 +590,9 @@ for t in range(NT):
 		l_tot[1,t] += l[i,1,t] 
 		l_tot[2,t] += l[i,2,t]
 		l_tot[3,t] += l[i,3,t]
+		l_mean[t]  += l[i,0,t] / I
 	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
+
 
 l_averaged = np.zeros((9,4,NT))
 for k in range(9):
@@ -618,8 +621,10 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$L\;$[s erg/g]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 for k in [0,2,4,6,8]: # range(9):
-	ax_L.plot(T, l_averaged[k,0,:], marker='o' , markersize=1, label=r'$\langle l(R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
-ax_L.plot(T, l_tot[0,:], marker='o'  , color='black' , markersize=1, label=r'$\langle l_{tot} \rangle$')
+	ax_L.plot(T, l_averaged[k,0,:], marker='o' , ls=':', markersize=1, label=r'$\langle l(R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
+ax_L.plot(T, l_tot[0,:], marker='o'  , color='black' , markersize=1, label=r'$l_{tot} = |\frac{1}{N} \sum{\vec{l}}|$')
+ax_L.plot(T, l_mean, marker='o'  , color='black' , ls='--', markersize=1, label=r'$\langle l \rangle = \frac{1}{N} \sum{|\vec{l}|}$')
+
 ax_L.legend(frameon=True) #, bbox_to_anchor=(1.01,1)) 
 fig_L.tight_layout()
 
@@ -651,11 +656,11 @@ for i in range(3):
 	ax_V[i].set_ylim(-2.,+2.)	
 	ax_V[i].set_aspect(1)	
 	sc_V.append( ax_V[i].scatter(X[:,k,-1], X[:,q,-1], c=V[:,j,-1], s=0.05) )
-	ax_V[i].set_xlabel(axis_n[k] + '[pc]')
-	ax_V[i].set_ylabel(axis_n[q] + '[pc]')
 	cbar_V.append( fig_V[i].colorbar(sc_V[i], ax = ax_V[i]) ) #, ticks = [0, 10, 20, 30, 40, 50])
 	# cbar_VZ.ax.set_yticklabels(['$\leq 0$', '10', '20', '30', '40', '$\geq 50$']) 
-	cbar_V[i].set_label(axis_n[j] + '[km/s]')
+	ax_V[i].set_xlabel(axis_n[k] + '[pc]')
+	ax_V[i].set_ylabel(axis_n[q] + '[pc]')
+	cbar_V[i].set_label(cbar_n[j] + '[km/s]')
 
 for i in range(3):
 	fig_V[i].savefig("C1_Results_PNG/Velocity_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
@@ -663,6 +668,45 @@ for i in range(3):
 
 ##################################################################################################
 ##################################################################################################
+
+'''
+fig_VX , ax_VX = plt.subplots(1,2,figsize=(7,5))
+fig_VY , ax_VY = plt.subplots(1,2,figsize=(7,5))
+fig_VZ , ax_VZ = plt.subplots(1,2,figsize=(7,5))
+fig_V = [fig_VX , fig_VY, fig_VZ]
+ax_V = [ [ax_VX[0] , ax_VX[1]] , [ax_VY[0] , ax_VY[1]] , [ax_VZ[0] , ax_VZ[1]] ]
+sc_V = [[],[],[]]
+cbar_V = [[],[],[]]
+axis_n = ['', '$x$', '$y$', '$z$']
+cbar_n = ['', r'$v_{x}$', r'$v_{y}$', r'$v_{z}$']
+index_1 = [1,2,3]
+index_2 = [2,3,1] 
+index_3 = [3,1,2]
+for i in range(3):
+	j = index_1[i]
+	k = index_2[i]
+	q = index_3[i]
+	fig_V[i].suptitle('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[-1]))
+	# ax_V[i].set_title('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[-1]))
+	for p in range(2):
+		ax_V[i][p].grid(linestyle=':', which='both')
+		ax_V[i][p].set_xlim(-2.,+2.)
+		ax_V[i][p].set_ylim(-2.,+2.)	
+		ax_V[i][p].set_aspect(1)	
+		ax_V[i][p].set_xlabel(axis_n[k] + '[pc]')
+		ax_V[i][p].set_ylabel(axis_n[q] + '[pc]')
+	ax_V[i][1].set_xscale('log')
+	ax_V[i][1].set_yscale('log')
+	for p in range(2):
+		sc_V[i][p].append( ax_V[i][p].scatter(X[:,k,-1], X[:,q,-1], c=V[:,j,-1], s=0.05) )
+		cbar_V[i].append( fig_V[i].colorbar(sc_V[i][p], ax = ax_V[i][p]) ) #, ticks = [0, 10, 20, 30, 40, 50])
+		# cbar_ .ax.set_yticklabels(['$\leq 0$', '10', '20', '30', '40', '$\geq 50$']) 
+		cbar_V[i][p].set_label(cbar_n[j] + '[km/s]')
+
+for i in range(3):
+	fig_V[i].savefig("C1_Results_PNG/Velocity_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
+	fig_V[i].savefig("C1_Results_EPS/Velocity_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
+'''
 
 time_prog_end = timer()
 
