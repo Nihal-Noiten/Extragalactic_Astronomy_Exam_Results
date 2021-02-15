@@ -210,28 +210,28 @@ file = open(plotfile, "r")		# Read data!
 i = 0
 t = 0
 for line in file:
-	a = line.strip("\n")
+	linje = line.strip("\n")
 	j = i % L
 	if j == 0:
-		N[t] = float(a)
+		N[t] = float(linje)
 	elif j == 2:
-		T[t] = float(a) * T0
+		T[t] = float(linje) * T0
 	elif j >= 3 and j < (3+I): 
 		m = j-3
-		M[m,t] = float(a) * M0
+		M[m,t] = float(linje) * M0
 	elif j >= (3+I) and j < (3+2*I):
 		m = j - (3+I)
-		b = a.split()
+		b = linje.split()
 		for k in range(len(b)):
 			X[m,k+1,t] = float(b[k]) * R0
 	elif j >= (3+2*I) and j < (3+3*I):
 		m = j - (3+2*I)
-		b = a.split()
+		b = linje.split()
 		for k in range(len(b)):
 			V[m,k+1,t] = float(b[k]) * V0
 	elif j >= (3+3*I) and j < (3+4*I):
 		m = j - (3+3*I)
-		P[m,t] = float(a) * M0 / R0
+		P[m,t] = float(linje) * M0 / R0
 		if (j+1) == (3+4*I):
 			t += 1
 			if t == NT:
@@ -241,17 +241,18 @@ file.close()
 
 print()
 print("Number of bodies: {:d}".format(I))
+print()
 print('Conversion factors to physical units:')
 print('1 r_IU = {:} pc'.format(R0))
 print('1 m_IU = {:} M_sun'.format(M0))
 print('1 v_IU = {:} km/s'.format(V0))
 print('1 t_IU = {:} Myr'.format(T0))
 
-M_tot = 0
+M_tot = 0.
 for i in range(I):
 	M_tot += M[i,0]
 
-rho = M_tot / ( 4. * np.pi / 3. * a**2)
+rho = M_tot / ( 4. * np.pi / 3. * a**2.)
 
 print()
 print('M_tot  = {:.0f} Msun'.format(M_tot))
@@ -544,12 +545,9 @@ if save == 'savesnaps=Y':
 	for t in range(len(T)):
 		snap = plt.figure(figsize=(10,10))
 		ax_s = snap.add_subplot(111, projection='3d')
-		ax_s.set_xlim(-lim_3d, +lim_3d)
-		ax_s.set_ylim(-lim_3d, +lim_3d)
-		ax_s.set_zlim(-lim_3d, +lim_3d)
-		# ax_s.xaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
-		# ax_s.yaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
-		# ax_s.zaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
+		ax_s.set_xlim(-1.1*a, + 1.1*a)
+		ax_s.set_ylim(-1.1*a, + 1.1*a)
+		ax_s.set_zlim(-1.1*a, + 1.1*a)
 		ax_s.set_xlabel(r"$x\;$[pc]")
 		ax_s.set_ylabel(r"$y\;$[pc]")
 		ax_s.set_zlabel(r"$z\;$[pc]")
@@ -574,6 +572,59 @@ if save == 'savesnaps=Y':
 	print()
 	print("Snapshots creation time [hh/mm/ss] = {:}".format(datetime.timedelta(seconds = time_snaps_2 - time_snaps_1)))
 	print()
+
+##################################################################################################
+##################################################################################################
+
+fig_L , ax_L = plt.subplots(figsize=(6,6))
+
+l = np.zeros((I,4,NT))
+L = np.zeros((4,NT))
+for t in range(NT):
+	for i in range(I):
+		l[i,1,t] = X[i,2,t] * V[i,3,t] - X[i,3,t] * V[i,2,t]
+		l[i,2,t] = X[i,3,t] * V[i,1,t] - X[i,1,t] * V[i,3,t]
+		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
+		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
+		L[1,t] += l[i,1,t]
+		L[2,t] += l[i,2,t]
+		L[3,t] += l[i,3,t]
+	L[0,t] = np.sqrt(L[1,t]**2 + L[2,t]**2 + L[3,t]**2) / M_tot
+
+l_averaged = np.zeros((9,4,NT))
+for k in range(9):
+	for t in range(NT):
+		C = np.copy(X[0:I-1,0,t])
+		D1 = np.copy(l[0:I-1,1,t])
+		D2 = np.copy(l[0:I-1,2,t])
+		D3 = np.copy(l[0:I-1,3,t])
+		sort_index = np.argsort(C)
+		D1 = D1[sort_index]
+		D2 = D2[sort_index]
+		D3 = D3[sort_index]
+		for j in range(500):
+			i_new = int(np.ceil(I/10*(k+1))-250+j)
+			l_averaged[k,1,t] += D1[i_new] / (M[i_new,t] * 250) 
+			l_averaged[k,2,t] += D1[i_new] / (M[i_new,t] * 250) 
+			l_averaged[k,3,t] += D1[i_new] / (M[i_new,t] * 250) 
+		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
+
+ax_L.grid(linestyle=':',which='both')
+ax_L.set_xlim(0, t_max)
+ax_L.set_ylim(6e-6,3e1)
+# ax_L.set_aspect(t_max / (2e1 - 7e-6))
+ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n')
+ax_L.set_xlabel(r'$t\;$[Myr]')
+ax_L.set_ylabel(r'$L\;$[s erg/g]') # , rotation='horizontal', horizontalalignment='right'
+ax_L.set_yscale('log')
+ax_L.plot(T, L[0,:], marker='o'  , color='black' , markersize=1, label=r'$\langle l_{tot} \rangle$')
+for k in [0,2,4,6,8]: # range(9):
+	ax_L.plot(T, l_averaged[k,0,:], marker='o' , markersize=1, label=r'$\langle l(R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'})\rangle$')
+ax_L.legend(frameon=True) #, bbox_to_anchor=(1.01,1)) 
+fig_L.tight_layout()
+
+fig_L.savefig("C1_Results_PNG/Angular_Momentum_CMRF_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_L.savefig("C1_Results_EPS/Angular_Momentum_CMRF_{:}.eps".format(plotfile), bbox_inches='tight')
 
 ##################################################################################################
 ##################################################################################################

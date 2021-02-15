@@ -209,28 +209,28 @@ file = open(plotfile, "r")		# Read data!
 i = 0
 t = 0
 for line in file:
-	a = line.strip("\n")
+	linje = line.strip("\n")
 	j = i % L
 	if j == 0:
-		N[t] = float(a)
+		N[t] = float(linje)
 	elif j == 2:
-		T[t] = float(a) * T0
+		T[t] = float(linje) * T0
 	elif j >= 3 and j < (3+I): 
 		m = j-3
-		M[m,t] = float(a) * M0
+		M[m,t] = float(linje) * M0
 	elif j >= (3+I) and j < (3+2*I):
 		m = j - (3+I)
-		b = a.split()
+		b = linje.split()
 		for k in range(len(b)):
 			X[m,k+1,t] = float(b[k]) * R0
 	elif j >= (3+2*I) and j < (3+3*I):
 		m = j - (3+2*I)
-		b = a.split()
+		b = linje.split()
 		for k in range(len(b)):
 			V[m,k+1,t] = float(b[k]) * V0
 	elif j >= (3+3*I) and j < (3+4*I):
 		m = j - (3+3*I)
-		P[m,t] = float(a) * M0 / R0
+		P[m,t] = float(linje) * M0 / R0
 		if (j+1) == (3+4*I):
 			t += 1
 			if t == NT:
@@ -240,17 +240,18 @@ file.close()
 
 print()
 print("Number of bodies: {:d}".format(I))
+print()
 print('Conversion factors to physical units:')
 print('1 r_IU = {:} pc'.format(R0))
 print('1 m_IU = {:} M_sun'.format(M0))
 print('1 v_IU = {:} km/s'.format(V0))
 print('1 t_IU = {:} Myr'.format(T0))
 
-M_tot = 0
+M_tot = 0.
 for i in range(I):
 	M_tot += M[i,0]
 
-rho = M_tot / ( 4. * np.pi / 3. * a**2)
+rho = M_tot / ( 4. * np.pi / 3. * a**2.)
 
 print()
 print('M_tot  = {:.0f} Msun'.format(M_tot))
@@ -395,12 +396,9 @@ if save == 'savesnaps=Y':
 	for t in range(len(T)):
 		snap = plt.figure(figsize=(10,10))
 		ax_s = snap.add_subplot(111, projection='3d')
-		ax_s.set_xlim(-lim_3d, +lim_3d)
-		ax_s.set_ylim(-lim_3d, +lim_3d)
-		ax_s.set_zlim(-lim_3d, +lim_3d)
-		# ax_s.xaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
-		# ax_s.yaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
-		# ax_s.zaxis.set_major_formatter(mplt.FormatStrFormatter('%.2f'))
+		ax_s.set_xlim(-1.1*a, + 1.1*a)
+		ax_s.set_ylim(-1.1*a, + 1.1*a)
+		ax_s.set_zlim(-1.1*a, + 1.1*a)
 		ax_s.set_xlabel(r"$x\;$[pc]")
 		ax_s.set_ylabel(r"$y\;$[pc]")
 		ax_s.set_zlabel(r"$z\;$[pc]")
@@ -415,7 +413,7 @@ if save == 'savesnaps=Y':
 		for i in range(I):
 			ax_s.scatter(X[i,1,t] , X[i,2,t] , X[i,3,t] , s=0.05 , color='darkred')
 	
-		snap.savefig("C2_Snaps/snapshot_{:d}.png".format(t), bbox_inches='tight')
+		snap.savefig("C2_Snaps_0/snapshot_{:d}.png".format(t), bbox_inches='tight')
 		plt.close(snap)
 		stdout.write("\rSaving movie snapshots:     progress = {:3.2f} %".format(t/len(T)*100.))
 	stdout.write("\rSaved all movie snapshots:  progress = {:3.2f} % \n".format(100.))
