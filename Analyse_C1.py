@@ -579,17 +579,17 @@ if save == 'savesnaps=Y':
 fig_L , ax_L = plt.subplots(figsize=(6,6))
 
 l = np.zeros((I,4,NT))
-L = np.zeros((4,NT))
+l_tot = np.zeros((4,NT))
 for t in range(NT):
 	for i in range(I):
 		l[i,1,t] = X[i,2,t] * V[i,3,t] - X[i,3,t] * V[i,2,t]
 		l[i,2,t] = X[i,3,t] * V[i,1,t] - X[i,1,t] * V[i,3,t]
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
-		L[1,t] += l[i,1,t]
-		L[2,t] += l[i,2,t]
-		L[3,t] += l[i,3,t]
-	L[0,t] = np.sqrt(L[1,t]**2 + L[2,t]**2 + L[3,t]**2) / M_tot
+		l_tot[1,t] += l[i,1,t] 
+		l_tot[2,t] += l[i,2,t]
+		l_tot[3,t] += l[i,3,t]
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
 l_averaged = np.zeros((9,4,NT))
 for k in range(9):
@@ -602,11 +602,11 @@ for k in range(9):
 		D1 = D1[sort_index]
 		D2 = D2[sort_index]
 		D3 = D3[sort_index]
-		for j in range(500):
-			i_new = int(np.ceil(I/10*(k+1))-250+j)
-			l_averaged[k,1,t] += D1[i_new] / (M[i_new,t] * 250) 
-			l_averaged[k,2,t] += D1[i_new] / (M[i_new,t] * 250) 
-			l_averaged[k,3,t] += D1[i_new] / (M[i_new,t] * 250) 
+		for j in range(200):
+			i_new = int(np.ceil(I/10*(k+1))-100+j)
+			l_averaged[k,1,t] += D1[i_new] / 200 
+			l_averaged[k,2,t] += D1[i_new] / 200 
+			l_averaged[k,3,t] += D1[i_new] / 200 
 		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
 
 ax_L.grid(linestyle=':',which='both')
@@ -617,9 +617,9 @@ ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n'
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$L\;$[s erg/g]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
-ax_L.plot(T, L[0,:], marker='o'  , color='black' , markersize=1, label=r'$\langle l_{tot} \rangle$')
 for k in [0,2,4,6,8]: # range(9):
-	ax_L.plot(T, l_averaged[k,0,:], marker='o' , markersize=1, label=r'$\langle l(R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'})\rangle$')
+	ax_L.plot(T, l_averaged[k,0,:], marker='o' , markersize=1, label=r'$\langle l(R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
+ax_L.plot(T, l_tot[0,:], marker='o'  , color='black' , markersize=1, label=r'$\langle l_{tot} \rangle$')
 ax_L.legend(frameon=True) #, bbox_to_anchor=(1.01,1)) 
 fig_L.tight_layout()
 
