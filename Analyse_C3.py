@@ -628,6 +628,43 @@ fig_L.savefig("C3_Results_EPS/Angular_Momentum_CMRF_{:}.eps".format(plotfile), b
 ##################################################################################################
 ##################################################################################################
 
+fig_VX , ax_VX = plt.subplots(figsize=(6,6))
+fig_VY , ax_VY = plt.subplots(figsize=(6,6))
+fig_VZ , ax_VZ = plt.subplots(figsize=(6,6))
+fig_V = [fig_VX , fig_VY, fig_VZ]
+ax_V = [ax_VX, ax_VY, ax_VZ]
+sc_V = []
+cbar_V = []
+axis_n = ['', '$x$', '$y$', '$z$']
+cbar_n = ['', r'$v_{x}$', r'$v_{y}$', r'$v_{z}$']
+index_1 = [1,2,3]
+index_2 = [2,3,1] 
+index_3 = [3,1,2]
+for i in range(3):
+	j = index_1[i]
+	k = index_2[i]
+	q = index_3[i]
+	ax_V[i].set_title('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[-1]))
+	ax_V[i].grid(linestyle=':', which='both')
+	ax_V[i].set_xlim(-2.,+2.)
+	ax_V[i].set_ylim(-2.,+2.)	
+	ax_V[i].set_aspect(1)	
+	sc_V.append( ax_V[i].scatter(X[:,k,-1], X[:,q,-1], c=V[:,j,-1], s=0.05) )
+	ax_V[i].set_xlabel(axis_n[k] + '[pc]')
+	ax_V[i].set_ylabel(axis_n[q] + '[pc]')
+	cbar_V.append( fig_V[i].colorbar(sc_V[i], ax = ax_V[i]) ) #, ticks = [0, 10, 20, 30, 40, 50])
+	# cbar_VZ.ax.set_yticklabels(['$\leq 0$', '10', '20', '30', '40', '$\geq 50$']) 
+	cbar_V[i].set_label(axis_n[j] + '[km/s]')
+
+for i in range(3):
+	fig_V[i].savefig("C1_Results_PNG/Velocity_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
+	fig_V[i].savefig("C1_Results_EPS/Velocity_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
+
+
+
+##################################################################################################
+##################################################################################################
+
 time_prog_end = timer()
 
 print("Total running time [hh/mm/ss] = {:}".format(datetime.timedelta(seconds = time_prog_end - time_prog_start)))
