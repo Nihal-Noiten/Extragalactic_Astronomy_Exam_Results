@@ -455,12 +455,17 @@ ax_LRCM.set_title('Lagrangian radii as functions of time - Remnant R.F.')
 ax_LRCM.set_xlabel(r'$t\;$[Myr]')
 ax_LRCM.set_ylabel(r'$r\;$[pc]') # , rotation='horizontal', horizontalalignment='right'
 
+t_coll, r_70_coll = 0. , 0.
+
 RLCM = np.zeros((9,NT))
 for k in range(9):
 	for t in range(NT):
 		C = np.copy(X[:,0,t])
 		C = np.sort(C)
 		RLCM[k,t] = C[int(np.ceil(I/10*(k+1))-1)]
+	if k == 6:
+		t_coll = np.argmin(RLCM[k,:])
+		r_70_coll = np.amin(RLCM[k,:])
 	ax_LRCM.plot(T , RLCM[k,:] , linestyle='' , marker='o' , markersize=1, label='{:d}0'.format(k+1) + r'$\%\; M_{tot}$')
 	
 ax_LRCM.legend(frameon=True, bbox_to_anchor=(1.01,1), title=r'$\begin{array}{rcl} \;\;N \!\!&\!\! = \!\!&\!\! 10^{4} \\ M_{tot} \!\!&\!\! = \!\!&\!\! 10^{4} \, M_{\odot} \\ \;\;a & = & 5 \; \mathrm{pc} \end{array}$'+'\n')
@@ -575,7 +580,7 @@ if save == 'savesnaps=Y':
 ##################################################################################################
 ##################################################################################################
 
-fig_L , ax_L = plt.subplots(figsize=(6,6))
+fig_L , ax_L = plt.subplots(figsize=(5,5))
 
 l = np.zeros((I,4,NT))
 l_tot = np.zeros((4,NT))
@@ -620,9 +625,9 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$L\;$[s erg/g]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 for k in [0,2,4,6,8]: # range(9):
-	ax_L.plot(T, l_averaged[k,0,:], marker='o' , ls=':', markersize=1, label=r'$\langle l(R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
-ax_L.plot(T, l_tot[0,:], marker='o'  , color='black' , markersize=1, label=r'$l_{tot} = |\frac{1}{N} \sum{\vec{l}}|$')
-ax_L.plot(T, l_mean, marker='o'  , color='black' , ls='--', markersize=1, label=r'$\langle l \rangle = \frac{1}{N} \sum{|\vec{l}|}$')
+	ax_L.plot(T, l_averaged[k,0,:], ls=':', label=r'$\langle l(R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
+ax_L.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = |\frac{1}{N} \sum_i{\vec{r}_i\times \vec{v}_i} \,|$')
+ax_L.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}$')
 
 ax_L.legend(frameon=True) #, bbox_to_anchor=(1.01,1)) 
 fig_L.tight_layout()
@@ -630,12 +635,16 @@ fig_L.tight_layout()
 fig_L.savefig("C3_Results_PNG/Angular_Momentum_CMRF_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
 fig_L.savefig("C3_Results_EPS/Angular_Momentum_CMRF_{:}.eps".format(plotfile), bbox_inches='tight')
 
+print()
+print('Fig saved: Angular momentum, RF CM')
+print()
+
 ##################################################################################################
 ##################################################################################################
 
-fig_VX , ax_VX = plt.subplots(figsize=(6,6))
-fig_VY , ax_VY = plt.subplots(figsize=(6,6))
-fig_VZ , ax_VZ = plt.subplots(figsize=(6,6))
+fig_VX , ax_VX = plt.subplots(figsize=(5,5))
+fig_VY , ax_VY = plt.subplots(figsize=(5,5))
+fig_VZ , ax_VZ = plt.subplots(figsize=(5,5))
 fig_V = [fig_VX , fig_VY, fig_VZ]
 ax_V = [ax_VX, ax_VY, ax_VZ]
 sc_V = []
@@ -665,10 +674,91 @@ for i in range(3):
 	fig_V[i].savefig("C3_Results_PNG/Velocity_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
 	fig_V[i].savefig("C3_Results_EPS/Velocity_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
 
-
+print()
+print('Fig saved: Velcity color maps, RF CM')
+print()
 
 ##################################################################################################
 ##################################################################################################
+
+fig_D , ax_D = plt.subplots(figsize=(5,5))
+
+ax_D.set_title('Remnant density profile - Remnant R.F.\n')
+ax_D.grid(linestyle=':', which='both')
+ax_D.set_xlabel(r'$r\;$[pc]')
+ax_D.set_ylabel(r'$\rho$\;[M$_{\odot}$ \,pc$^{-3}]$') # , rotation='horizontal', horizontalalignment='right'
+# ax_D.set_xlim(0,a)
+# ax_D.set_ylim(None,None)
+# ax_D.set_aspect(a / ( - ))
+ax_D.set_xscale('log')
+ax_D.set_yscale('log')
+
+tt = -1
+m_i = M[0,tt]
+r_min_tt = np.amin( X[:,0,tt] )
+r_max_tt = np.amax( X[:,0,tt] )
+oom_r_min_tt = np.log10( r_min_tt )
+oom_r_max_tt = np.log10( r_max_tt )
+
+R_log = np.logspace(oom_r_min_tt, oom_r_max_tt, 101)
+R_log_c = np.logspace(oom_r_min_tt, oom_r_max_tt, 201)
+R_log_c = R_log_c[1:200:2]
+
+# R_sort_tt = np.sort(X[0,:,tt])
+V_log = np.zeros(len(R_log))
+for i in range(len(R_log)):
+	V_log[i] = 4. * np.pi / 3. * R_log[i]**3
+for i in range(len(R_log)-1):
+	V_log[-1-i] = V_log[-1-i] - V_log[-2-i]
+
+histo_D , trash_D = np.histogram( X[:,0,tt] , bins=R_log )
+D_log = []
+for i in range(len(V_log)-1):
+	D_log.append( histo_D[i] * m_i / V_log[i+1] )
+D_log = np.array(D_log)
+
+ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1)
+
+##################################################################################################
+
+def rho_dehnen(r,M,a,g):
+	return (3-g)*M/(4*np.pi) * a / ( r**g * (r+a)**(4-g) )
+
+# index_fit = np.argmax(r_samp > 0.05)
+# print("index_fit = {:d}".format(index_fit))
+# r_samp_1 = np.copy(r_samp)
+# density_1 = np.copy(density)
+# r_samp_1 = r_samp_1[index_fit:]
+# density_1 = density_1[index_fit:]
+
+print("R_70_min = {:.4f} pc at t_coll = {:.4f} Myr".format(r_70_coll,t_coll))
+print()
+
+# cut = (R_log_c >= 4e-2) & (R_log_c < 4e0)
+cut = np.all([R_log_c >= 1e-1, R_log_c <= 4e0], axis=0)
+popt, pcov = curve_fit(rho_dehnen, R_log_c[cut], D_log[cut], p0=[7e3,0.5,1.], bounds=([1e3,0,0], [1e4,5,5]))
+MM = popt[0]
+aa = popt[1]
+gg = popt[2]
+# ax_D.plot(R_log_c, rho_dehnen(R_log_c,MM,aa,gg), linestyle=':' , color='darkred', label='$Fit:$\n'+r'$a=$\,'+'{:.3f} pc'.format(aa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MM)+r'\,M$_{sun}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(gg))
+MMM = 0.7*M_tot
+aaa = r_70_coll / (1. + np.sqrt(2.))
+ggg = 1
+ax_D.plot(R_log_c, rho_dehnen(R_log_c,MMM,aaa,ggg), linestyle=':' , color='darkred', label='Fit:\n'+r'$a=$\,'+'{:.3f} pc'.format(aaa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MMM)+r'\,M$_{sun}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(ggg))
+
+ax_D.legend(frameon=True) #, bbox_to_anchor=(1.01,1)) 
+fig_D.tight_layout()
+
+fig_D.savefig("C3_Results_PNG/Density_Profile_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_D.savefig("C3_Results_EPS/Density_Profile_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+
+print()
+print('Fig saved: Density profile, RF CM')
+print()
+
+##################################################################################################
+##################################################################################################
+
 
 time_prog_end = timer()
 
