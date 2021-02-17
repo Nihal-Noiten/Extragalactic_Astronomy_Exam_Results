@@ -61,6 +61,9 @@ def Th_P(P):
 def pdf_r(r,a):
 	return 3. * r**2 / (a**3)
 
+def pdf_hern_r(r,a):
+	return 2. * a * r / ((a + r)**3)
+
 def pdf_ph(ph):
 	return 0.5 / np.pi * (1. + 0. * ph)
 
@@ -95,7 +98,7 @@ def pdf_l_1(l):
 def histo_pdf_plotter(ax, x_lim, x_step, x_bins, func, npar, x_min=0.):
 	x = np.linspace(x_min, x_lim, 10000)
 	if npar == 1:
-		f_x = func(x, a * R0)
+		f_x = func(x, a)
 		ax.plot(x, f_x, color='black', lw=0.9)
 	elif npar == 0:
 		f_x = func(x)
@@ -108,11 +111,11 @@ def histo_pdf_plotter(ax, x_lim, x_step, x_bins, func, npar, x_min=0.):
 		for i in range(9):
 			x_temp = x_bins[j] + x_step / 2 + x_step / 15 * (i-4)
 			if npar == 1:
-				f_temp = func(x_mid, a * R0)
+				f_temp = func(x_mid, a)
 			elif npar == 0:
 				f_temp = func(x_mid)
-			e_temp = np.sqrt(f_temp * N) / N
-			ax.vlines(x_mid, ymin=f_temp-e_temp, ymax=f_temp+e_temp, color='black', lw=0.9)
+			e_temp = np.sqrt(f_temp * I) / I
+			# ax.vlines(x_mid, ymin=f_temp-e_temp, ymax=f_temp+e_temp, color='black', lw=0.9)
 			x.append(x_temp)
 			f_x.append(f_temp)
 			e_x.append(e_temp)
@@ -122,12 +125,12 @@ def histo_pdf_plotter(ax, x_lim, x_step, x_bins, func, npar, x_min=0.):
 		ax.plot(x, f_x + e_x, color='black', lw=0.9)
 		ax.plot(x, f_x - e_x, color='black', lw=0.9)
 
-def histo_pdf_plotter_log(ax, x_min, x_max, x_step, x_bins, func, npar):
+def histo_pdf_plotter_log(ax, x_min, x_max, x_bins, func, npar):
 	log_min = np.log10(x_min)
 	log_max = np.log10(x_max)
 	x = np.logspace(log_min, log_max, 1000)
 	if npar == 1:
-		f_x = func(x, a * R0) # * N
+		f_x = func(x, aaa) # * N
 		ax.plot(x, f_x, color='black', lw=0.9)
 	elif npar == 0:
 		f_x = func(x) # * N
@@ -141,10 +144,45 @@ def histo_pdf_plotter_log(ax, x_min, x_max, x_step, x_bins, func, npar):
 		for i in range(9):
 			x_temp = x_mid + x_step / 15 * (i-4)
 			if npar == 1:
-				f_temp = func(x_mid, a * R0) #* N
+				f_temp = func(x_mid, aaa) #* N
 			elif npar == 0:
 				f_temp = func(x_mid) # * N
-			e_temp = np.sqrt(f_temp * N) / N # np.sqrt(f_temp) # 
+			e_temp = np.sqrt(f_temp * I) / I # np.sqrt(f_temp) # 
+			ax.vlines(x_mid, ymin=f_temp-e_temp, ymax=f_temp+e_temp, color='black', lw=0.9)
+			x.append(x_temp)
+			f_x.append(f_temp)
+			e_x.append(e_temp)
+		x = np.array(x)
+		f_x = np.array(f_x)
+		e_x = np.array(e_x)
+		ax.plot(x, f_x + e_x, color='black', lw=0.9)
+		ax.plot(x, f_x - e_x, color='black', lw=0.9)
+
+def histo_pdf_norm_log(ax, x_min, x_max, x_bins, func, npar):
+	log_min = np.log10(x_min)
+	log_max = np.log10(x_max)
+	x = np.logspace(log_min, log_max, 1000)
+	if npar == 1:
+		norm , fuffa = quad(func, x_max, x_max, aaa)
+		f_x = func(x, a) # * N / norm
+		ax.plot(x, f_x, color='black', lw=0.9)
+	elif npar == 0:
+		norm , fuffa = quad(func, x_max, x_max)
+		f_x = func(x) / norm
+		ax.plot(x, f_x, color='black', lw=0.9)
+	for j in range(len(x_bins)-1):
+		x = []
+		f_x = []
+		e_x = []
+		x_mid = (x_bins[j+1] + x_bins[j]) / 2.
+		x_step = x_bins[j+1] - x_bins[j]
+		for i in range(9):
+			x_temp = x_mid + x_step / 15 * (i-4)
+			if npar == 1:
+				f_temp = func(x_mid, a) #* N
+			elif npar == 0:
+				f_temp = func(x_mid) # * N
+			e_temp = np.sqrt(f_temp * I) / I # np.sqrt(f_temp) # 
 			ax.vlines(x_mid, ymin=f_temp-e_temp, ymax=f_temp+e_temp, color='black', lw=0.9)
 			x.append(x_temp)
 			f_x.append(f_temp)
@@ -456,7 +494,6 @@ ax_LRCM.set_title('Lagrangian radii as functions of time - Remnant R.F.')
 ax_LRCM.set_xlabel(r'$t\;$[Myr]')
 ax_LRCM.set_ylabel(r'$r\;$[pc]') # , rotation='horizontal', horizontalalignment='right'
 
-t_coll, r_70_coll = 0. , 0.
 
 RLCM = np.zeros((9,NT))
 for k in range(9):
@@ -464,9 +501,6 @@ for k in range(9):
 		C = np.copy(X[:,0,t])
 		C = np.sort(C)
 		RLCM[k,t] = C[int(np.ceil(I/10*(k+1))-1)]
-	if k == 6:
-		t_coll = np.argmin(RLCM[k,:])
-		r_70_coll = np.amin(RLCM[k,:])
 	ax_LRCM.plot(T , RLCM[k,:] , linestyle='' , marker='o' , markersize=1, label='{:d}0'.format(k+1) + r'$\%\; M_{tot}$')
 	
 ax_LRCM.legend(frameon=True, bbox_to_anchor=(1.01,1), title=r'$\begin{array}{rcl} \;\;N \!\!&\!\! = \!\!&\!\! 10^{4} \\ M_{tot} \!\!&\!\! = \!\!&\!\! 10^{4} \, M_{\odot} \\ \;\;a & = & 5 \; \mathrm{pc} \end{array}$'+'\n')
@@ -729,17 +763,21 @@ print()
 def rho_dehnen(r,M,a,g):
 	return (3-g)*M/(4*np.pi) * a / ( r**g * (r+a)**(4-g) )
 
-# index_fit = np.argmax(r_samp > 0.05)
-# print("index_fit = {:d}".format(index_fit))
-# r_samp_1 = np.copy(r_samp)
-# density_1 = np.copy(density)
-# r_samp_1 = r_samp_1[index_fit:]
-# density_1 = density_1[index_fit:]
 
-print("R_70_min = {:.4f} pc at t_coll = {:.4f} Myr".format(r_70_coll,t_coll))
+R_35_t = np.zeros(NT)
+
+for t in range(NT):
+	C = np.copy(X[:,0,t])
+	C = np.sort(C)
+	R_35_t[t] = C[int(np.ceil(I/10*3.5)-1)]
+
+t_test    = int(2.3 * np.argmin(R_35_t[:]))
+r_35_test = np.amin(R_35_t[:])
+r_35_end  = R_35_t[-1]
+
+print("R_35_test = {:.4f} pc at t_test = {:.4f} Myr".format(r_35_test,t_test))
 print()
 
-# cut = (R_log_c >= 1e-1) & (R_log_c <= 4e0)
 cut = np.all([R_log_c >= 1e-1, R_log_c <= 4e0], axis=0)
 
 popt, pcov = curve_fit(rho_dehnen, R_log_c[cut], D_log[cut], p0=[7e3,0.5,1.], bounds=([1e3,0,0], [1e4,5,5]))
@@ -748,7 +786,7 @@ aa = popt[1]
 gg = popt[2]
 #ax_D.plot(R_log_c, rho_dehnen(R_log_c,MM,aa,gg), linestyle=':' , color='darkred', label='$Fit:$\n'+r'$a=$\,'+'{:.3f} pc'.format(aa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MM)+r'\,M$_{sun}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(gg))
 MMM = 0.7*M_tot
-aaa = r_70_coll / (1. + np.sqrt(2.))
+aaa = r_35_end / (1. + np.sqrt(2.))
 ggg = 1
 ax_D.plot(R_log_c, rho_dehnen(R_log_c,MMM,aaa,ggg), linestyle=':' , color='darkred', label='Fit:\n'+r'$a=$\,'+'{:.3f} pc'.format(aaa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MMM)+r'\,M$_{sun}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(ggg))
 
@@ -760,6 +798,75 @@ fig_D.savefig("C1_Results_EPS/Density_Profile_CM_{:}.eps".format(plotfile), bbox
 
 print()
 print('Fig saved: Density profile, RF CM')
+print()
+
+##################################################################################################
+##################################################################################################
+
+tt = -1
+
+r_step = (r_max_tt - r_min_tt) / 40.
+ph_lim  = 2. * np.pi
+ph_step = np.pi / 12.
+th_lim  = np.pi
+th_step = np.pi / 12.
+
+R  = np.zeros(I)
+Th = np.zeros(I)
+Ph = np.zeros(I)
+for i in range(I):
+	R[i]  = X[i,0,tt]
+	Ph[i] = np.arctan2( X[i,2,tt] , X[i,1,tt])
+	if Ph[i] < 0.:
+		Ph[i] += 2. * np.pi
+	Th[i] = np.arccos( X[i,3,tt] / X[i,0,tt])
+
+fig_h = plt.figure(figsize=(7,6), constrained_layout=True)
+gs = GridSpec(2, 3, figure=fig_h)
+ax_h_R  = fig_h.add_subplot(gs[0,0:3])
+ax_h_Ph = fig_h.add_subplot(gs[1,0:2])
+ax_h_Th = fig_h.add_subplot(gs[1,2:3])
+
+
+R_bins = np.logspace(oom_r_min_tt, oom_r_max_tt, 41)
+ax_h_R.hist(R, bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_hern_r, npar=1)
+ax_h_R.set_xscale('log')
+
+# R_bins = np.linspace(r_min_tt, r_max_tt, 41)
+# ax_h_R.hist(R, bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+# histo_pdf_plotter(ax=ax_h_R, x_min=r_min_tt, x_lim=r_max_tt, x_step=r_step, x_bins=R_bins, func=pdf_hern_r, npar=1)
+
+ax_h_R.set_title('Position-space'+'\n'+'Radius pdf')
+ax_h_R.set_xlabel(r'$r\;$[pc]')
+ax_h_R.set_xlim(r_min_tt, r_max_tt)
+ax_h_R.set_ylim(None,None)
+ax_h_R.grid(ls=':',which='both')
+
+Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12) # , step=th_step)
+ax_h_Th.hist(Th, bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_h_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
+ax_h_Th.set_title('Position-space'+'\n'+'Polar angle pdf')
+ax_h_Th.set_xlabel(r'$\vartheta \;$[rad]')
+ax_h_Th.set_xlim(0,th_lim)
+ax_h_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
+ax_h_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_h_Th.grid(ls=':',which='both')
+
+Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24) #,step=ph_step)
+ax_h_Ph.hist(Ph, bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_h_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
+ax_h_Ph.set_title('Position-space'+'\n'+'Azimuthal angle pdf')
+ax_h_Ph.set_xlabel(r'$\varphi \;$[rad]')
+ax_h_Ph.set_xlim(0,ph_lim)
+ax_h_Ph.xaxis.set_major_locator(plt.MultipleLocator(np.pi / 4))
+ax_h_Ph.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_h_Ph.grid(ls=':',which='both')
+
+fig_h.savefig("C1_Results_PNG/Histograms_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_h.savefig("C1_Results_EPS/Histograms_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+print()
+print('Fig saved: Histograms, RF CM')
 print()
 
 ##################################################################################################
