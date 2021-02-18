@@ -777,11 +777,11 @@ popt, pcov = curve_fit(rho_dehnen, R_log_c[cut], D_log[cut], p0=[7e3,0.5,1.], bo
 MM = popt[0]
 aa = popt[1]
 gg = popt[2]
-# ax_D.plot(R_log_c, rho_dehnen(R_log_c,MM,aa,gg), linestyle=':' , color='darkred', label='$Fit:$\n'+r'$a=$\,'+'{:.3f} pc'.format(aa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MM)+r'\,M$_{sun}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(gg))
+# ax_D.plot(R_log_c, rho_dehnen(R_log_c,MM,aa,gg), linestyle=':' , color='darkred', label='$Fit:$\n'+r'$a=$\,'+'{:.3f} pc'.format(aa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MM)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(gg))
 MMM = 0.7*M_tot
 aaa = r_30_test / (1. + np.sqrt(2.))
 ggg = 1
-ax_D.plot(R_log_c, rho_dehnen(R_log_c,MMM,aaa,ggg), linestyle=':' , color='darkred', label='Fit:\n'+r'$a=$\,'+'{:.3f} pc'.format(aaa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MMM)+r'\,M$_{sun}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(ggg))
+ax_D.plot(R_log_c, rho_dehnen(R_log_c,MMM,aaa,ggg), linestyle=':' , color='darkred', label='Fit:\n'+r'$a=$\,'+'{:.3f} pc'.format(aaa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MMM)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(ggg))
 
 ax_D.legend(frameon=True) #, bbox_to_anchor=(1.01,1)) 
 fig_D.tight_layout()

@@ -413,7 +413,7 @@ if save == 'savesnaps=Y':
 		for i in range(I):
 			ax_s.scatter(X[i,1,t] , X[i,2,t] , X[i,3,t] , s=0.05 , color='darkred')
 	
-		snap.savefig("C2_Snaps_0/snapshot_{:d}.png".format(t), bbox_inches='tight')
+		snap.savefig("C2_Snaps/snapshot_{:d}.png".format(t), bbox_inches='tight')
 		plt.close(snap)
 		stdout.write("\rSaving movie snapshots:     progress = {:3.2f} %".format(t/len(T)*100.))
 	stdout.write("\rSaved all movie snapshots:  progress = {:3.2f} % \n".format(100.))
