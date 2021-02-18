@@ -27,7 +27,8 @@ from	scipy.integrate 		import quad, ode
 plt.rcParams.update({
     "text.usetex": True,
     "font.family": "serif",				# or sans-serif
-    "font.serif": ["Times New Roman"]})	# or Helvetica
+    "font.serif" : ["Times New Roman"],	# or Helvetica
+	"font.size"  : 10})	
 
 #######################################################################################################
 #######################################################################################################
@@ -349,13 +350,13 @@ v_max = 1.1 * v_max
 #######################################################################################################
 #######################################################################################################
 
-fig_LR , ax_LR = plt.subplots(figsize=(5,5))
+fig_LR , ax_LR = plt.subplots(figsize=(5.5,5.5))
 factor_tr = t_max / lim_3d
 ax_LR.set_aspect(factor_tr)
 ax_LR.grid(linestyle=':', which='both')
 ax_LR.set_xlim(0, t_max)
 ax_LR.set_ylim(0, lim_3d)
-ax_LR.set_title('Lagrangian radii as functions of time',fontsize=20)
+ax_LR.set_title('Lagrangian radii as functions of time',fontsize=10)
 ax_LR.set_xlabel(r'$t\;$[Myr]')
 ax_LR.set_ylabel(r'$r\;$[pc]') # , rotation='horizontal', horizontalalignment='right'
 
@@ -368,7 +369,7 @@ for k in range(9):
 	ax_LR.plot(T , RL[k,:] , linestyle='' , marker='o' , markersize=0.75, label='{:d}0'.format(k+1) + r'$\%\; M_{tot}$') 
 ax_LR.vlines(T_collapse, ymin=0, ymax=lim_3d, linestyle='--', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
-ax_LR.legend(frameon=True, bbox_to_anchor=(1.01,1), title=r'$\begin{array}{rcl} \;\;N \!\!&\!\! = \!\!&\!\! 10^{4} \\ M_{tot} \!\!&\!\! = \!\!&\!\! 10^{4} \, M_{\odot} \\ \;\;a & = & 5 \; \mathrm{pc} \end{array}$'+'\n',fontsize=20)
+ax_LR.legend(frameon=True, bbox_to_anchor=(1.01,1), title=r'$\begin{array}{rcl} \;\;N \!\!&\!\! = \!\!&\!\! 10^{4} \\ M_{tot} \!\!&\!\! = \!\!&\!\! 10^{4} \, M_{\odot} \\ \;\;a & = & 5 \; \mathrm{pc} \end{array}$'+'\n',fontsize=10)
 
 fig_LR.tight_layout()
 
@@ -380,13 +381,13 @@ print()
 
 ##################################################################################################
 
-fig_E , ax_E = plt.subplots(figsize=(5,5))
+fig_E , ax_E = plt.subplots(figsize=(5.5,5.5))
 
 ax_E.grid(linestyle=':')
 ax_E.set_xlim(0, t_max)
 # ax_E.set_ylim(-1e17,5e17)
 # ax_E.set_aspect(t_max / 6e17)
-ax_E.set_title('Total energies as functions of time\n',fontsize=20)
+ax_E.set_title('Total energies as functions of time\n',fontsize=10)
 ax_E.set_xlabel(r'$t\;$[Myr]')
 ax_E.set_ylabel(r'$E\;$[erg/g]') # , rotation='horizontal', horizontalalignment='right'
 
@@ -404,8 +405,8 @@ print('Fig saved: Energy, RF 0')
 
 ##################################################################################################
 
-fig_Phi = plt.figure(figsize=(5,5))
-fig_Phi.suptitle('Evolution of the potential as a function of radius',fontsize=20)
+fig_Phi = plt.figure(figsize=(5.5,5.5))
+fig_Phi.suptitle('Evolution of the potential as a function of radius',fontsize=10)
 gs = GridSpec(2, 2, figure=fig_Phi)
 ax_phi = []
 ax_phi.append(fig_Phi.add_subplot(gs[0,0]))
@@ -443,7 +444,7 @@ print()
 ##################################################################################################
 ##################################################################################################
 
-fig_l , ax_l = plt.subplots(figsize=(5,5))
+fig_l , ax_l = plt.subplots(figsize=(5.5,5.5))
 
 l = np.zeros((I,4,NT))
 l_tot = np.zeros((4,NT))
@@ -483,7 +484,7 @@ ax_l.grid(linestyle=':',which='both')
 ax_l.set_xlim(0, t_max)
 ax_l.set_ylim(1e-1,2e1)
 # ax_L.set_aspect(t_max / (2e1 - 7e-6))
-ax_l.set_title('Average angular momentum as a function of time\n',fontsize=20)
+ax_l.set_title('Average angular momentum as a function of time\n',fontsize=10)
 ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_l.set_yscale('log')
@@ -584,13 +585,13 @@ print()
 #######################################################################################################
 #######################################################################################################
 
-fig_LRCM , ax_LRCM = plt.subplots(figsize=(5,5))
+fig_LRCM , ax_LRCM = plt.subplots(figsize=(5.5,5.5))
 factor_tr = t_max / lim_3d
 ax_LRCM.set_aspect(factor_tr)
 ax_LRCM.grid(linestyle=':', which='both')
 ax_LRCM.set_xlim(0, t_max)
 ax_LRCM.set_ylim(0, lim_3d)
-ax_LRCM.set_title('Lagrangian radii as functions of time - Remnant R.F.',fontsize=20)
+ax_LRCM.set_title('Lagrangian radii as functions of time - Remnant R.F.',fontsize=10)
 ax_LRCM.set_xlabel(r'$t\;$[Myr]')
 ax_LRCM.set_ylabel(r'$r\;$[pc]') # , rotation='horizontal', horizontalalignment='right'
 
@@ -604,7 +605,7 @@ for k in range(9):
 	ax_LRCM.plot(T , RLCM[k,:] , linestyle='' , marker='o' , markersize=0.75, label='{:d}0'.format(k+1) + r'$\%\; M_{tot}$') # 
 ax_LRCM.vlines(T_collapse, ymin=0, ymax=lim_3d, linestyle='--', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 	
-ax_LRCM.legend(frameon=True, bbox_to_anchor=(1.01,1), title=r'$\begin{array}{rcl} \;\;N \!\!&\!\! = \!\!&\!\! 10^{4} \\ M_{tot} \!\!&\!\! = \!\!&\!\! 10^{4} \, M_{\odot} \\ \;\;a & = & 5 \; \mathrm{pc} \end{array}$'+'\n',fontsize=20)
+ax_LRCM.legend(frameon=True, bbox_to_anchor=(1.01,1), title=r'$\begin{array}{rcl} \;\;N \!\!&\!\! = \!\!&\!\! 10^{4} \\ M_{tot} \!\!&\!\! = \!\!&\!\! 10^{4} \, M_{\odot} \\ \;\;a & = & 5 \; \mathrm{pc} \end{array}$'+'\n',fontsize=10)
 
 fig_LRCM.tight_layout()
 
@@ -616,13 +617,13 @@ print()
 
 ##################################################################################################
 
-fig_ECM , ax_ECM = plt.subplots(figsize=(5,5))
+fig_ECM , ax_ECM = plt.subplots(figsize=(5.5,5.5))
 
 ax_ECM.grid(linestyle=':')
 ax_ECM.set_xlim(0, t_max)
 # ax_ECM.set_ylim(-1e17,5e17)
 # ax_ECM.set_aspect(t_max / 6e17)
-ax_ECM.set_title('Total energies as functions of time - Remnant R.F.\n',fontsize=20)
+ax_ECM.set_title('Total energies as functions of time - Remnant R.F.\n',fontsize=10)
 ax_ECM.set_xlabel(r'$t\;$[Myr]')
 ax_ECM.set_ylabel(r'$E\;$[erg/g]') # , rotation='horizontal', horizontalalignment='right'
 
@@ -648,7 +649,7 @@ print('Fig saved: Energy, RF CM')
 ##################################################################################################
 
 fig_PhiCM = plt.figure(figsize=(6.5,6.5))
-fig_PhiCM.suptitle('Evolution of the potential as a function of radius - Remnant R.F.',fontsize=20)
+fig_PhiCM.suptitle('Evolution of the potential as a function of radius - Remnant R.F.',fontsize=10)
 gs = GridSpec(2, 2, figure=fig_Phi)
 ax_phiCM = []
 ax_phiCM.append(fig_PhiCM.add_subplot(gs[0,0]))
@@ -667,7 +668,7 @@ for i in range(4):
 	ax_phiCM[i].set_xlim(0,a) # lim_3d
 	# ax_phiCM[i].set_ylim(-4e12,0)
 	# ax_phiCM[i].set_aspect(t_max / 4e12)
-	ax_phiCM[i].set_title('\nPotential at $t$ = {:.3f} Myr\n'.format(T[ttt]),fontsize=20)
+	ax_phiCM[i].set_title('\nPotential at $t$ = {:.3f} Myr\n'.format(T[ttt]),fontsize=10)
 	ax_phiCM[i].set_xlabel(r'$r\;$[pc]')
 	ax_phiCM[i].set_ylabel(r'$\Phi\;$[erg/g]') #, rotation='horizontal', horizontalalignment='right'
 	ax_phiCM[i].scatter(X[:,0,ttt], P[:,ttt], color='lightgrey', s=0.5, label=r'$\Phi(r)\,:\;simulation$')
@@ -707,7 +708,7 @@ if save == 'savesnaps=Y':
 		ax_s.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 		ax_s.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 		ax_s.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
-		ax_s.set_title('$t = {:.3f}$ Myr\n'.format(T[t]),fontsize=20)
+		ax_s.set_title('$t = {:.3f}$ Myr\n'.format(T[t]),fontsize=10)
 
 		for i in range(I):
 			ax_s.scatter(X[i,1,t] , X[i,2,t] , X[i,3,t] , s=0.05 , color='darkred')
@@ -726,7 +727,7 @@ if save == 'savesnaps=Y':
 ##################################################################################################
 ##################################################################################################
 
-fig_L , ax_L = plt.subplots(figsize=(5,5))
+fig_L , ax_L = plt.subplots(figsize=(5.5,5.5))
 
 l      = np.zeros((I,4,NT))
 l_tot  = np.zeros((4,NT))
@@ -775,7 +776,7 @@ ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
 ax_L.set_ylim(1e-1,1e1)
 # ax_L.set_aspect(t_max / (2e1 - 7e-6))
-ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=20)
+ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
@@ -783,7 +784,7 @@ ax_L.set_yscale('log')
 for k in [0,2,4,6,8]: # range(9):
 	ax_L.plot(T, l_averaged[k,0,:], ls=':', label=r'$\langle l(r=R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
 '''
-ax_L.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = |\sum_i{\vec{l}_i}\, + \frac{1}{N} \sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = |\vec{l}_{cm}\, + \frac{1}{N} \sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
 ax_L.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
@@ -800,9 +801,9 @@ print()
 ##################################################################################################
 ##################################################################################################
 
-fig_VX , ax_VX = plt.subplots(figsize=(5,5))
-fig_VY , ax_VY = plt.subplots(figsize=(5,5))
-fig_VZ , ax_VZ = plt.subplots(figsize=(5,5))
+fig_VX , ax_VX = plt.subplots(figsize=(5.5,5.5))
+fig_VY , ax_VY = plt.subplots(figsize=(5.5,5.5))
+fig_VZ , ax_VZ = plt.subplots(figsize=(5.5,5.5))
 fig_V = [fig_VX , fig_VY, fig_VZ]
 ax_V = [ax_VX, ax_VY, ax_VZ]
 sc_V = []
@@ -816,12 +817,12 @@ for i in range(3):
 	j = index_1[i]
 	k = index_2[i]
 	q = index_3[i]
-	ax_V[i].set_title('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[-1]),fontsize=20)
+	ax_V[i].set_title('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[-1]),fontsize=10)
 	ax_V[i].grid(linestyle=':', which='both')
 	ax_V[i].set_xlim(-2.,+2.)
 	ax_V[i].set_ylim(-2.,+2.)	
 	ax_V[i].set_aspect(1)	
-	sc_V.append( ax_V[i].scatter(X[:,k,-1], X[:,q,-1], c=V[:,j,-1], s=0.05, vmin=-15, vmax=15) ) # clim=[-15,+15]
+	sc_V.append( ax_V[i].scatter(X[:,k,-1], X[:,q,-1], c=V[:,j,-1], s=0.05, vmin=-5, vmax=5) ) # clim=[-15,+15]
 	cbar_V.append( fig_V[i].colorbar(sc_V[i], ax = ax_V[i]) ) #, ticks = [0, 10, 20, 30, 40, 50])
 	# cbar_VZ.ax.set_yticklabels(['$\leq 0$', '10', '20', '30', '40', '$\geq 50$']) 
 	ax_V[i].set_xlabel(axis_n[k] + '[pc]')
@@ -829,8 +830,8 @@ for i in range(3):
 	cbar_V[i].set_label(cbar_n[j] + '[km/s]')
 
 for i in range(3):
-	fig_V[i].savefig("C1_Results_PNG/Velocity_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
-	fig_V[i].savefig("C1_Results_EPS/Velocity_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
+	fig_V[i].savefig("C1_Results_PNG/Velocity_Tight_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
+	fig_V[i].savefig("C1_Results_EPS/Velocity_Tight_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
 
 print()
 print('Fig saved: Velcity color maps, RF CM')
@@ -840,9 +841,9 @@ print()
 ##################################################################################################
 ##################################################################################################
 
-fig_D , ax_D = plt.subplots(figsize=(5,5))
+fig_D , ax_D = plt.subplots(figsize=(5.5,5.5))
 
-ax_D.set_title('Remnant density profile - Remnant R.F.\n',fontsize=20)
+ax_D.set_title('Remnant density profile - Remnant R.F.\n',fontsize=10)
 ax_D.grid(linestyle=':', which='both')
 ax_D.set_xlabel(r'$r\;$[pc]')
 ax_D.set_ylabel(r'$\rho$\;[M$_{\odot}$ \,pc$^{-3}]$') # , rotation='horizontal', horizontalalignment='right'
@@ -956,7 +957,7 @@ ax_h_R.set_xscale('log')
 # ax_h_R.hist(R, bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 # histo_pdf_plotter(ax=ax_h_R, x_min=r_min_tt, x_lim=r_max_tt, x_step=r_step, x_bins=R_bins, func=pdf_hern_r, npar=1)
 
-ax_h_R.set_title('Position-space'+'\n'+'Radius pdf',fontsize=20)
+ax_h_R.set_title('Position-space'+'\n'+'Radius pdf',fontsize=10)
 ax_h_R.set_xlabel(r'$r\;$[pc]')
 ax_h_R.set_xlim(r_min_tt, r_max_tt)
 ax_h_R.set_ylim(None,None)
@@ -965,7 +966,7 @@ ax_h_R.grid(ls=':',which='both')
 Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12) # , step=th_step)
 ax_h_Th.hist(Th[R < r_75_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
-ax_h_Th.set_title('Position-space'+'\n'+'Polar angle pdf',fontsize=20)
+ax_h_Th.set_title('Position-space'+'\n'+'Polar angle pdf',fontsize=10)
 ax_h_Th.set_xlabel(r'$\vartheta \;$[rad]')
 ax_h_Th.set_xlim(0,th_lim)
 ax_h_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
@@ -975,7 +976,7 @@ ax_h_Th.grid(ls=':',which='both')
 Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24) #,step=ph_step)
 ax_h_Ph.hist(Ph[R < r_75_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
-ax_h_Ph.set_title('Position-space'+'\n'+'Azimuthal angle pdf',fontsize=20)
+ax_h_Ph.set_title('Position-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
 ax_h_Ph.set_xlabel(r'$\varphi \;$[rad]')
 ax_h_Ph.set_xlim(0,ph_lim)
 ax_h_Ph.xaxis.set_major_locator(plt.MultipleLocator(np.pi / 4))
