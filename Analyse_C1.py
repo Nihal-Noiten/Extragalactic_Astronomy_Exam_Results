@@ -959,7 +959,7 @@ print()
 ##################################################################################################
 ##################################################################################################
 
-# PLOT COORDINATE-SPACE HISTOGRAMS TO CHECK IF THE REMNANT HAS A SPHERICAL SYMMETRY
+# PLOT COORDINATE-SPACE HISTOGRAMS TO CHECK WHETHER THE REMNANT HAS A SPHERICAL SYMMETRY
 
 tt = -1
 
@@ -1021,10 +1021,94 @@ ax_h_Ph.xaxis.set_major_locator(plt.MultipleLocator(np.pi / 4))
 ax_h_Ph.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
 ax_h_Ph.grid(ls=':',which='both')
 
-fig_h.savefig("C1_Results_PNG/Histograms_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
-fig_h.savefig("C1_Results_EPS/Histograms_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+fig_h.savefig("C1_Results_PNG/Histograms_R_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_h.savefig("C1_Results_EPS/Histograms_R_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
 print()
-print('Fig saved: Histograms, RF CM')
+print('Fig saved: Histograms R, RF CM')
+print()
+
+##################################################################################################
+##################################################################################################
+
+# PLOT VELOCITY-SPACE HISTOGRAMS TO CHECK WHETHER THE REMNANT IS ISOTROPIC
+
+tt = -1
+R_remn = np.copy(X[:,0,tt])
+V_remn = np.copy(V[:,0,tt])
+V_remn = V_remn[R_remn < r_75_end]
+
+m_i = M[0,tt]
+v_min_tt = np.amin( V_remn )
+v_max_tt = np.amax( V_remn )
+oom_v_min_tt = np.log10( v_min_tt )
+oom_v_max_tt = np.log10( v_max_tt )
+
+v_step = (v_max_tt - v_min_tt) / 40.
+ph_lim  = 2. * np.pi
+ph_step = np.pi / 12.
+th_lim  = np.pi
+th_step = np.pi / 12.
+
+R  = np.zeros(I)
+P  = np.zeros(I)
+Th = np.zeros(I)
+Ph = np.zeros(I)
+for i in range(I):
+	R[i]  = X[i,0,tt]
+	P[i]  = V[i,0,tt]
+	Ph[i] = np.arctan2( V[i,2,tt] , V[i,1,tt])
+	if Ph[i] < 0.:
+		Ph[i] += 2. * np.pi
+	Th[i] = np.arccos( V[i,3,tt] / V[i,0,tt])
+
+fig_v = plt.figure(figsize=(7,6), constrained_layout=True)
+gs = GridSpec(2, 3, figure=fig_h)
+ax_v_V  = fig_v.add_subplot(gs[0,0:3])
+ax_v_Ph = fig_v.add_subplot(gs[1,0:2])
+ax_v_Th = fig_v.add_subplot(gs[1,2:3])
+
+
+V_bins = np.logspace(oom_r_min_tt, oom_r_max_tt, 41)
+ax_v_V.hist(P[R < r_75_end], bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+# histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_hern_r, npar=1)
+ax_v_V.set_xscale('log')
+
+# R_bins = np.linspace(r_min_tt, r_max_tt, 41)
+# ax_h_R.hist(R, bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+# histo_pdf_plotter(ax=ax_h_R, x_min=r_min_tt, x_lim=r_max_tt, x_step=r_step, x_bins=R_bins, func=pdf_hern_r, npar=1)
+
+ax_v_V.set_title('Velocity-space'+'\n'+'Velocity module pdf',fontsize=10)
+ax_v_V.set_xlabel(r'$v\;$[km/s]')
+ax_v_V.set_xlim(v_min_tt, v_max_tt)
+ax_v_V.set_ylim(None,None)
+ax_v_V.grid(ls=':',which='both')
+
+Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12) # , step=th_step)
+ax_v_Th.hist(Th[R < r_75_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_v_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
+ax_v_Th.set_title('Velocity-space'+'\n'+'Polar angle pdf',fontsize=10)
+ax_v_Th.set_xlabel(r'$\vartheta \;$[rad]')
+ax_v_Th.set_xlim(0,th_lim)
+ax_v_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
+ax_v_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_v_Th.grid(ls=':',which='both')
+
+Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24) #,step=ph_step)
+ax_v_Ph.hist(Ph[R < r_75_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_v_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
+ax_v_Ph.set_title('Velocity-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
+ax_v_Ph.set_xlabel(r'$\varphi \;$[rad]')
+ax_v_Ph.set_xlim(0,ph_lim)
+ax_v_Ph.xaxis.set_major_locator(plt.MultipleLocator(np.pi / 4))
+ax_v_Ph.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_v_Ph.grid(ls=':',which='both')
+
+fig_v.tight_layout()
+fig_h.savefig("C1_Results_PNG/Histograms_V_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_h.savefig("C1_Results_EPS/Histograms_V_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+
+print()
+print('Fig saved: Histograms V, RF CM')
 print()
 
 ##################################################################################################

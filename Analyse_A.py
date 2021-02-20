@@ -400,7 +400,7 @@ ax_l.set_yscale('log')
 
 ax_l.plot(T, l_tot[0,:], color='lightcoral', label=r'Case 1: $ |\,\vec{l}_{tot}\,| $')
 ax_l.plot(T, l_mean, color='lightcoral' , ls='--', label=r'Case 1: $\langle\,|\, \vec{l}\,|\, \rangle $')
-ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{collapse} $')
 
 
 ##################################################################################################
@@ -531,9 +531,9 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
-ax_L.plot(T, l_tot[0,:], color='lightcoral', label=r"Case 1: $|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='lightcoral' , ls='--', label=r"Case 1: $\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{collapse} $')
+ax_L.plot(T, l_tot[0,:], color='lightcoral', label=r"Case 1: $|\,\vec{l}_{tot} \,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_mean, color='lightcoral' , ls='--', label=r"Case 1: $\langle \,|\,\vec{l}'\,|\, \rangle $")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
 
 ##################################################################################################
@@ -891,8 +891,8 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='lightskyblue', label=r"Case 2: $|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='lightskyblue' , ls='--', label=r"Case 2: $\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_L.plot(T, l_tot[0,:], color='lightskyblue', label=r"Case 2: $|\,\vec{l}_{tot} \,| $") 
+ax_L.plot(T, l_mean, color='lightskyblue' , ls='--', label=r"Case 2: $\langle \,|\,\vec{l}'\,|\, \rangle $")
 
 
 ##################################################################################################
@@ -1253,8 +1253,8 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='khaki', label=r"Case 3: $|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='khaki' , ls='--', label=r"Case 3: $\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_L.plot(T, l_tot[0,:], color='khaki', label=r"Case 3: $|\,\vec{l}_{tot} \,| $") 
+ax_L.plot(T, l_mean, color='khaki' , ls='--', label=r"Case 3: $\langle \,|\,\vec{l}'\,|\, \rangle $")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
 ax_L.legend(frameon=True) #, loc=2) #, bbox_to_anchor=(1.01,1)) 
 
