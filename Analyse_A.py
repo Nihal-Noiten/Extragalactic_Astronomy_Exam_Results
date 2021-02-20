@@ -225,6 +225,9 @@ V0 = V0 / 1e5 											# km/s
 a      = 1. * R0
 lim_3d = 2. * R0
 
+R = []
+D = []
+
 
 file = open(plotfile, "r")
 print('Extracting data from: {:}'.format(plotfile))
@@ -395,12 +398,10 @@ ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_l.set_yscale('log')
 
-ax_l.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = \frac{1}{N} |\sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_l.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_l.plot(T, l_tot[0,:], color='khaki', label=r'Case 1: $ l_{tot} $') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_l.plot(T, l_mean, color='khaki' , ls='--', label=r'Case 1: $\langle l \rangle $')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
-ax_l.legend(frameon=True, loc=2) #, bbox_to_anchor=(1.01,1)) 
-fig_l.tight_layout()
 
 ##################################################################################################
 ##################################################################################################
@@ -485,7 +486,6 @@ fig_L , ax_L = plt.subplots(figsize=(5.5,5.5))
 
 l      = np.zeros((I,4,NT))
 l_tot  = np.zeros((4,NT))
-l_cm   = np.zeros((4,NT))
 l_mean = np.zeros(NT)
 
 for t in range(NT):
@@ -494,19 +494,15 @@ for t in range(NT):
 		l[i,2,t] = X[i,3,t] * V[i,1,t] - X[i,1,t] * V[i,3,t]
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
-		l_tot[1,t] += l[i,1,t] 
-		l_tot[2,t] += l[i,2,t]
-		l_tot[3,t] += l[i,3,t]
-		l_mean[t]  += l[i,0,t] / I
-	l_cm[1,t] = _X_cm[2,t] * _V_cm[3,t] - _X_cm[3,t] * _V_cm[2,t]
-	l_cm[2,t] = _X_cm[3,t] * _V_cm[1,t] - _X_cm[1,t] * _V_cm[3,t]
-	l_cm[3,t] = _X_cm[1,t] * _V_cm[2,t] - _X_cm[2,t] * _V_cm[1,t]
-	l_cm[0,t] = np.sqrt(l_cm[1,t]**2 + l_cm[2,t]**2 + l_cm[3,t]**2)
-	l_tot[1,t] += l_cm[1,t] 
-	l_tot[2,t] += l_cm[2,t]
-	l_tot[3,t] += l_cm[3,t]
-	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
+		l_mean[t]  += l[i,0,t] / I
+
+		# to check again that the ang mom is conserved and plot it, add X_cm, V_cm to X_i , V_i 
+		l_tot[1,t] += (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] )
+		l_tot[2,t] += (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] )
+		l_tot[3,t] += (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] )
+
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
 l_averaged = np.zeros((9,4,NT))
 for k in range(9):
@@ -535,12 +531,9 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = |\sum_i{\vec{l}_i}\, + \frac{1}{N} \sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
-ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
-ax_L.legend(frameon=True, loc=1) # , loc=4, bbox_to_anchor=(1.01,1)
-fig_L.tight_layout()
 
 ##################################################################################################
 ##################################################################################################
@@ -553,8 +546,8 @@ ax_D.set_title('Remnant density profile - Remnant R.F.\n',fontsize=10)
 ax_D.grid(linestyle=':', which='both')
 ax_D.set_xlabel(r'$r\;$[pc]')
 ax_D.set_ylabel(r'$\rho$\;[M$_{\odot}$ \,pc$^{-3}]$') # , rotation='horizontal', horizontalalignment='right'
-# ax_D.set_xlim(0,a)
-# ax_D.set_ylim(None,None)
+ax_D.set_xlim(3e-2,8e0)
+ax_D.set_ylim(4e-1,1e6)
 # ax_D.set_aspect(a / ( - ))
 ax_D.set_xscale('log')
 ax_D.set_yscale('log')
@@ -586,9 +579,11 @@ for i in range(len(V_log)-1):
 	D_log.append( histo_D[i] * m_i / V_log[i+1] )
 D_log = np.array(D_log)
 
-ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1)
+for i in range(len(D_log)):
+	R.append(R_log_c[i])
+	D.append(D_log[i])
 
-fig_D.tight_layout()
+ax_D.plot(R_log_c, D_log, color='khaki', ls='', marker='o', markersize=1, label='Case 1')
 
 ##################################################################################################
 ##################################################################################################
@@ -766,12 +761,8 @@ ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_l.set_yscale('log')
 
-ax_l.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = \frac{1}{N} |\sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_l.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
-ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
-
-ax_l.legend(frameon=True, loc=2) #, bbox_to_anchor=(1.01,1)) 
-fig_l.tight_layout()
+ax_l.plot(T, l_tot[0,:], color='lightskyblue', label=r'Case 2: \; $l_{tot} $') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_l.plot(T, l_mean, color='lightskyblue' , ls='--', label=r'Case 2: \; $\langle l \rangle $')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
 ##################################################################################################
 ##################################################################################################
@@ -854,7 +845,6 @@ print()
 
 l      = np.zeros((I,4,NT))
 l_tot  = np.zeros((4,NT))
-l_cm   = np.zeros((4,NT))
 l_mean = np.zeros(NT)
 
 for t in range(NT):
@@ -863,19 +853,15 @@ for t in range(NT):
 		l[i,2,t] = X[i,3,t] * V[i,1,t] - X[i,1,t] * V[i,3,t]
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
-		l_tot[1,t] += l[i,1,t] 
-		l_tot[2,t] += l[i,2,t]
-		l_tot[3,t] += l[i,3,t]
-		l_mean[t]  += l[i,0,t] / I
-	l_cm[1,t] = _X_cm[2,t] * _V_cm[3,t] - _X_cm[3,t] * _V_cm[2,t]
-	l_cm[2,t] = _X_cm[3,t] * _V_cm[1,t] - _X_cm[1,t] * _V_cm[3,t]
-	l_cm[3,t] = _X_cm[1,t] * _V_cm[2,t] - _X_cm[2,t] * _V_cm[1,t]
-	l_cm[0,t] = np.sqrt(l_cm[1,t]**2 + l_cm[2,t]**2 + l_cm[3,t]**2)
-	l_tot[1,t] += l_cm[1,t] 
-	l_tot[2,t] += l_cm[2,t]
-	l_tot[3,t] += l_cm[3,t]
-	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
+		l_mean[t]  += l[i,0,t] / I
+
+		# to check again that the ang mom is conserved and plot it, add X_cm, V_cm to X_i , V_i 
+		l_tot[1,t] += (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] )
+		l_tot[2,t] += (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] )
+		l_tot[3,t] += (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] )
+
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
 l_averaged = np.zeros((9,4,NT))
 for k in range(9):
@@ -904,12 +890,9 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = |\sum_i{\vec{l}_i}\, + \frac{1}{N} \sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
-ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
-ax_L.legend(frameon=True, loc=1) # , loc=4, bbox_to_anchor=(1.01,1)
-fig_L.tight_layout()
 
 ##################################################################################################
 ##################################################################################################
@@ -953,7 +936,11 @@ for i in range(len(V_log)-1):
 	D_log.append( histo_D[i] * m_i / V_log[i+1] )
 D_log = np.array(D_log)
 
-ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1)
+for i in range(len(D_log)):
+	R.append(R_log_c[i])
+	D.append(D_log[i])
+
+ax_D.plot(R_log_c, D_log, color='lightskyblue', ls='', marker='o', markersize=1, label='Case 2')
 
 fig_D.tight_layout()
 
@@ -1133,11 +1120,10 @@ ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_l.set_yscale('log')
 
-ax_l.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = \frac{1}{N} |\sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_l.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
-ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_l.plot(T, l_tot[0,:], color='lightcoral', label=r'Case 3: $l_{tot} $') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_l.plot(T, l_mean, color='lightcoral' , ls='--', label=r'Case 3: $\langle l \rangle $')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
-ax_l.legend(frameon=True, loc=2) #, bbox_to_anchor=(1.01,1)) 
+ax_l.legend(frameon=True) #, loc=2) #, bbox_to_anchor=(1.01,1)) 
 fig_l.tight_layout()
 
 ##################################################################################################
@@ -1221,7 +1207,6 @@ print()
 
 l      = np.zeros((I,4,NT))
 l_tot  = np.zeros((4,NT))
-l_cm   = np.zeros((4,NT))
 l_mean = np.zeros(NT)
 
 for t in range(NT):
@@ -1230,19 +1215,15 @@ for t in range(NT):
 		l[i,2,t] = X[i,3,t] * V[i,1,t] - X[i,1,t] * V[i,3,t]
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
-		l_tot[1,t] += l[i,1,t] 
-		l_tot[2,t] += l[i,2,t]
-		l_tot[3,t] += l[i,3,t]
-		l_mean[t]  += l[i,0,t] / I
-	l_cm[1,t] = _X_cm[2,t] * _V_cm[3,t] - _X_cm[3,t] * _V_cm[2,t]
-	l_cm[2,t] = _X_cm[3,t] * _V_cm[1,t] - _X_cm[1,t] * _V_cm[3,t]
-	l_cm[3,t] = _X_cm[1,t] * _V_cm[2,t] - _X_cm[2,t] * _V_cm[1,t]
-	l_cm[0,t] = np.sqrt(l_cm[1,t]**2 + l_cm[2,t]**2 + l_cm[3,t]**2)
-	l_tot[1,t] += l_cm[1,t] 
-	l_tot[2,t] += l_cm[2,t]
-	l_tot[3,t] += l_cm[3,t]
-	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
+		l_mean[t]  += l[i,0,t] / I
+
+		# to check again that the ang mom is conserved and plot it, add X_cm, V_cm to X_i , V_i 
+		l_tot[1,t] += (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] )
+		l_tot[2,t] += (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] )
+		l_tot[3,t] += (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] )
+
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
 l_averaged = np.zeros((9,4,NT))
 for k in range(9):
@@ -1271,27 +1252,14 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='black', label=r'$l_{tot} = |\sum_i{\vec{l}_i}\, + \frac{1}{N} \sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='black' , ls='--', label=r'$\langle l \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
-ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
-ax_L.legend(frameon=True, loc=1) # , loc=4, bbox_to_anchor=(1.01,1)
-fig_L.tight_layout()
 
 ##################################################################################################
 ##################################################################################################
 
 tt = -1
-
-ax_D.set_title('Remnant density profile - Remnant R.F.\n',fontsize=10)
-ax_D.grid(linestyle=':', which='both')
-ax_D.set_xlabel(r'$r\;$[pc]')
-ax_D.set_ylabel(r'$\rho$\;[M$_{\odot}$ \,pc$^{-3}]$') # , rotation='horizontal', horizontalalignment='right'
-# ax_D.set_xlim(0,a)
-# ax_D.set_ylim(None,None)
-# ax_D.set_aspect(a / ( - ))
-ax_D.set_xscale('log')
-ax_D.set_yscale('log')
 
 R_remn = np.copy(X[:,0,tt])
 R_remn = R_remn[R_remn < r_75_end]
@@ -1320,20 +1288,70 @@ for i in range(len(V_log)-1):
 	D_log.append( histo_D[i] * m_i / V_log[i+1] )
 D_log = np.array(D_log)
 
-ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1)
+for i in range(len(D_log)):
+	R.append(R_log_c[i])
+	D.append(D_log[i])
 
+ax_D.plot(R_log_c, D_log, color='lightcoral', ls='', marker='o', markersize=1, label='Case 3')
+
+ax_D.legend(frameon=True, loc=1) # , loc=4, bbox_to_anchor=(1.01,1)
+
+ax_D.grid(ls=':',which='both')
 fig_D.tight_layout()
 
 ##################################################################################################
 ##################################################################################################
 
 
-fig_l.savefig("All_Results_PNG/Angular_Momentum.png".format(plotfile), bbox_inches='tight', dpi=400)
-fig_l.savefig("All_Results_EPS/Angular_Momentum.eps".format(plotfile), bbox_inches='tight')
-fig_L.savefig("All_Results_PNG/Angular_Momentum_CMRF.png".format(plotfile), bbox_inches='tight', dpi=400)
-fig_L.savefig("All_Results_EPS/Angular_Momentum_CMRF.eps".format(plotfile), bbox_inches='tight')
-fig_D.savefig("All_Results_PNG/Density_Profile_CMRF.png".format(plotfile), bbox_inches='tight', dpi=400)
-fig_D.savefig("All_Results_EPS/Density_Profile_CMRF.eps".format(plotfile), bbox_inches='tight')
+fig_d , ax_d = plt.subplots(figsize=(5.5,5.5))
+
+ax_d.set_title('Remnant density profile - Remnant R.F.\n',fontsize=10)
+ax_d.grid(linestyle=':', which='both')
+ax_d.set_xlabel(r'$r\;$[pc]')
+ax_d.set_ylabel(r'$\rho$\;[M$_{\odot}$ \,pc$^{-3}]$') # , rotation='horizontal', horizontalalignment='right'
+ax_d.set_xlim(3e-2,8e0)
+ax_d.set_ylim(4e-1,1e6)
+ax_d.set_xscale('log')
+ax_d.set_yscale('log')
+
+R = np.array(R)
+D = np.array(D)
+sort_R = np.argsort(R)
+R = R[sort_R]
+D = D[sort_R]
+
+
+ax_d.plot(R, D, color='black', ls='', marker='o', markersize=1)
+
+def rho_dehnen(r,A,gamma):
+	return (3-gamma)*7000./(4*np.pi) * A / ( r**gamma * (r+A)**(4-gamma) )
+
+def rho_dehnen_b(r,A,B,C):
+	return (B-1-C)*7000./(4*np.pi) * A / ( r**C * (r+A)**(B-C) )
+
+m0 = 7000.
+a0 = 0.2
+g0 = 1.
+b0 = 4.
+
+popt, pcov = curve_fit(rho_dehnen, R, D, p0=[a0,g0], bounds=([0.2,0], [5,3]))
+a1 = popt[0]
+g1 = popt[1]
+ax_d.plot(R, rho_dehnen(R,a1,g1), color='darkred', label='$Fit:$\n'+r'$a=$\,'+'{:.3f} pc'.format(a1)+'\n'+r'$M=$\,'+'{:.0f}'.format(m0)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(g1)) # , linestyle=':' 
+
+ax_d.legend(frameon=True)
+
+##################################################################################################
+##################################################################################################
+
+fig_l.savefig("All_Results_PNG/Angular_Momentum.png", bbox_inches='tight', dpi=400)
+fig_l.savefig("All_Results_EPS/Angular_Momentum.eps", bbox_inches='tight')
+fig_L.savefig("All_Results_PNG/Angular_Momentum_CMRF.png", bbox_inches='tight', dpi=400)
+fig_L.savefig("All_Results_EPS/Angular_Momentum_CMRF.eps", bbox_inches='tight')
+fig_D.savefig("All_Results_PNG/Density_Profile_CMRF.png", bbox_inches='tight', dpi=400)
+fig_D.savefig("All_Results_EPS/Density_Profile_CMRF.eps", bbox_inches='tight')
+fig_d.savefig("All_Results_PNG/Density_Profile_Fit.png", bbox_inches='tight', dpi=400)
+fig_d.savefig("All_Results_EPS/Density_Profile_Fit.eps", bbox_inches='tight')
 
 time_prog_end = timer()
 
