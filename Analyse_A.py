@@ -398,8 +398,8 @@ ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_l.set_yscale('log')
 
-ax_l.plot(T, l_tot[0,:], color='khaki', label=r'Case 1: $ l_{tot} $') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_l.plot(T, l_mean, color='khaki' , ls='--', label=r'Case 1: $\langle l \rangle $')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_l.plot(T, l_tot[0,:], color='lightcoral', label=r'Case 1: $ |\,\vec{l}_{tot}\,| $')
+ax_l.plot(T, l_mean, color='lightcoral' , ls='--', label=r'Case 1: $\langle\,|\, \vec{l}\,|\, \rangle $')
 ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
 
@@ -531,8 +531,9 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_L.plot(T, l_tot[0,:], color='lightcoral', label=r"Case 1: $|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_mean, color='lightcoral' , ls='--', label=r"Case 1: $\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
 
 ##################################################################################################
@@ -583,7 +584,7 @@ for i in range(len(D_log)):
 	R.append(R_log_c[i])
 	D.append(D_log[i])
 
-ax_D.plot(R_log_c, D_log, color='khaki', ls='', marker='o', markersize=1, label='Case 1')
+ax_D.plot(R_log_c, D_log, color='lightcoral', ls='', marker='o', markersize=1, label='Case 1')
 
 ##################################################################################################
 ##################################################################################################
@@ -761,8 +762,8 @@ ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_l.set_yscale('log')
 
-ax_l.plot(T, l_tot[0,:], color='lightskyblue', label=r'Case 2: \; $l_{tot} $') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_l.plot(T, l_mean, color='lightskyblue' , ls='--', label=r'Case 2: \; $\langle l \rangle $')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_l.plot(T, l_tot[0,:], color='lightskyblue', label=r'Case 2: $ |\,\vec{l}_{tot}\,| $')
+ax_l.plot(T, l_mean, color='lightskyblue' , ls='--', label=r'Case 2: $\langle\,|\, \vec{l}\,|\, \rangle $')
 
 ##################################################################################################
 ##################################################################################################
@@ -890,8 +891,8 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_L.plot(T, l_tot[0,:], color='lightskyblue', label=r"Case 2: $|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_mean, color='lightskyblue' , ls='--', label=r"Case 2: $\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
 
 ##################################################################################################
@@ -1120,8 +1121,8 @@ ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_l.set_yscale('log')
 
-ax_l.plot(T, l_tot[0,:], color='lightcoral', label=r'Case 3: $l_{tot} $') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_l.plot(T, l_mean, color='lightcoral' , ls='--', label=r'Case 3: $\langle l \rangle $')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_l.plot(T, l_tot[0,:], color='khaki', label=r'Case 3: $ |\,\vec{l}_{tot}\,| $')
+ax_l.plot(T, l_mean, color='khaki' , ls='--', label=r'Case 3: $\langle\,|\, \vec{l}\,|\, \rangle $')
 
 ax_l.legend(frameon=True) #, loc=2) #, bbox_to_anchor=(1.01,1)) 
 fig_l.tight_layout()
@@ -1252,9 +1253,10 @@ ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
 ax_L.set_yscale('log')
 
-ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_L.plot(T, l_tot[0,:], color='khaki', label=r"Case 3: $|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
+ax_L.plot(T, l_mean, color='khaki' , ls='--', label=r"Case 3: $\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
+ax_L.legend(frameon=True) #, loc=2) #, bbox_to_anchor=(1.01,1)) 
 
 ##################################################################################################
 ##################################################################################################
@@ -1292,7 +1294,7 @@ for i in range(len(D_log)):
 	R.append(R_log_c[i])
 	D.append(D_log[i])
 
-ax_D.plot(R_log_c, D_log, color='lightcoral', ls='', marker='o', markersize=1, label='Case 3')
+ax_D.plot(R_log_c, D_log, color='khaki', ls='', marker='o', markersize=1, label='Case 3')
 
 ax_D.legend(frameon=True, loc=1) # , loc=4, bbox_to_anchor=(1.01,1)
 
