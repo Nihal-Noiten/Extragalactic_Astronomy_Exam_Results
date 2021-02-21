@@ -392,7 +392,6 @@ for k in range(9):
 ax_l.grid(linestyle=':',which='both')
 ax_l.set_xlim(0, t_max)
 ax_l.set_ylim(1e-1,2e1)
-# ax_L.set_aspect(t_max / (2e1 - 7e-6))
 ax_l.set_title('Average angular momentum as a function of time\n',fontsize=10)
 ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
@@ -524,14 +523,13 @@ for k in range(9):
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
-ax_L.set_ylim(1e-1,1e1)
-# ax_L.set_aspect(t_max / (2e1 - 7e-6))
+ax_L.set_ylim(0.,2)				# (1e-1,3e0)
 ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
-ax_L.set_yscale('log')
+# ax_L.set_yscale('log')
 
-ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{collapse} $')
+ax_L.vlines(T_collapse, ymin=0., ymax=2., linestyle=':', color='black', label=r'$T_{collapse} $') # ymin=1e-1, ymax=2e1
 ax_L.plot(T, l_tot[0,:], color='lightcoral', label=r"Case 1: $|\,\vec{l}_{tot} \,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
 ax_L.plot(T, l_mean, color='lightcoral' , ls='--', label=r"Case 1: $\langle \,|\,\vec{l}'\,|\, \rangle $")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
@@ -753,10 +751,7 @@ for k in range(9):
 			l_averaged[k,3,t] += D1[i_new] / 200 
 		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
 
-ax_l.grid(linestyle=':',which='both')
-ax_l.set_xlim(0, t_max)
-ax_l.set_ylim(1e-1,2e1)
-# ax_L.set_aspect(t_max / (2e1 - 7e-6))
+
 ax_l.set_title('Average angular momentum as a function of time\n',fontsize=10)
 ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
@@ -884,12 +879,9 @@ for k in range(9):
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
-ax_L.set_ylim(1e-1,1e1)
-# ax_L.set_aspect(t_max / (2e1 - 7e-6))
 ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
-ax_L.set_yscale('log')
 
 ax_L.plot(T, l_tot[0,:], color='lightskyblue', label=r"Case 2: $|\,\vec{l}_{tot} \,| $") 
 ax_L.plot(T, l_mean, color='lightskyblue' , ls='--', label=r"Case 2: $\langle \,|\,\vec{l}'\,|\, \rangle $")
@@ -904,9 +896,6 @@ ax_D.set_title('Remnant density profile - Remnant R.F.\n',fontsize=10)
 ax_D.grid(linestyle=':', which='both')
 ax_D.set_xlabel(r'$r\;$[pc]')
 ax_D.set_ylabel(r'$\rho$\;[M$_{\odot}$ \,pc$^{-3}]$') # , rotation='horizontal', horizontalalignment='right'
-# ax_D.set_xlim(0,a)
-# ax_D.set_ylim(None,None)
-# ax_D.set_aspect(a / ( - ))
 ax_D.set_xscale('log')
 ax_D.set_yscale('log')
 
@@ -1112,14 +1101,6 @@ for k in range(9):
 			l_averaged[k,3,t] += D1[i_new] / 200 
 		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
 
-ax_l.grid(linestyle=':',which='both')
-ax_l.set_xlim(0, t_max)
-ax_l.set_ylim(1e-1,2e1)
-# ax_L.set_aspect(t_max / (2e1 - 7e-6))
-ax_l.set_title('Average angular momentum as a function of time\n',fontsize=10)
-ax_l.set_xlabel(r'$t\;$[Myr]')
-ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
-ax_l.set_yscale('log')
 
 ax_l.plot(T, l_tot[0,:], color='khaki', label=r'Case 3: $ |\,\vec{l}_{tot}\,| $')
 ax_l.plot(T, l_mean, color='khaki' , ls='--', label=r'Case 3: $\langle\,|\, \vec{l}\,|\, \rangle $')
@@ -1246,12 +1227,10 @@ for k in range(9):
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
-ax_L.set_ylim(1e-1,1e1)
 # ax_L.set_aspect(t_max / (2e1 - 7e-6))
 ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
-ax_L.set_yscale('log')
 
 ax_L.plot(T, l_tot[0,:], color='khaki', label=r"Case 3: $|\,\vec{l}_{tot} \,| $") 
 ax_L.plot(T, l_mean, color='khaki' , ls='--', label=r"Case 3: $\langle \,|\,\vec{l}'\,|\, \rangle $")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
@@ -1326,20 +1305,56 @@ D = D[sort_R]
 ax_d.plot(R, D, color='black', ls='', marker='o', markersize=1)
 
 def rho_dehnen(r,A,gamma):
-	return (3-gamma)*7000./(4*np.pi) * A / ( r**gamma * (r+A)**(4-gamma) )
+	return (3-gamma)*7300./(4*np.pi) * A / ( r**gamma * (r+A)**(4-gamma) )
 
 def rho_dehnen_b(r,A,B,C):
 	return (B-1-C)*7000./(4*np.pi) * A / ( r**C * (r+A)**(B-C) )
 
-m0 = 7000.
+def rho_dehnen_c(r,p,A,B,C):
+	return p / ( (r/A)**C * (1+r/A)**(B-C) )
+
+def rho_plummer(r,M,A):
+	return M / ( 4. * np.pi / 3. * A**3 ) * (1 + r**2 / A**2 )**(- 5. / 2.)
+
+def rho_plummer_b(r,A):
+	return 7300. / ( 4. * np.pi / 3. * A**3 ) * (1 + r**2 / A**2 )**(- 5. / 2.)
+
+m0 = 7300.
 a0 = 0.2
 g0 = 1.
 b0 = 4.
+p0 = m0 / (4. * np.pi / 3. * a0**3)
 
-popt, pcov = curve_fit(rho_dehnen, R, D, p0=[a0,g0], bounds=([0.2,0], [5,3]))
-a1 = popt[0]
-g1 = popt[1]
-ax_d.plot(R, rho_dehnen(R,a1,g1), color='darkred', label='$Fit:$\n'+r'$a=$\,'+'{:.3f} pc'.format(a1)+'\n'+r'$M=$\,'+'{:.0f}'.format(m0)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(g1)) # , linestyle=':' 
+print("rho0_dehn = {:2e}".format(p0))
+
+# ax_d.plot(R, rho_dehnen(R,a0,g0), color='darkred', lw=0.7, ls=':', label='Guess 1:\n'+r'$a=$\,'+'{:.3f} pc'.format(a0)+'\n'+r'$M=$\,'+'{:.0f}'.format(m0)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(g0)) # , linestyle=':' 
+
+popt1, pcov1 = curve_fit(rho_dehnen, R, D, p0=[a0,g0], bounds=([0.2,0], [5,3]))
+a1 = popt1[0]
+g1 = popt1[1]
+# ax_d.plot(R, rho_dehnen(R,a1,g1), color='darkred', lw=0.7, label='Fit 1:\n'+r'$a=$\,'+'{:.3f} pc'.format(a1)+'\n'+r'$M=$\,'+'{:.0f}'.format(m0)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(g1)) # , linestyle=':' 
+
+
+popt2, pcov2 = curve_fit(rho_dehnen_c, R, D, p0=[p0,a0,b0,g0], bounds=([0.,0.1,3.,0.], [2*p0,0.5,5.,3.]))
+p2 = popt2[0]
+a2 = popt2[1]
+b2 = popt2[2]
+g2 = popt2[3]
+fit_string2 = 'Fit 2:\n' + r'$\rho_{0}=$\,' + '{:.2e}'.format(p2) + '\n' + r'$a=$\,' + '{:.3f} pc'.format(a2) + '\n' + r'$\beta=$\,' + '{:.2f}'.format(b2) + '\n' + r'$\gamma=$\,' + '{:.2f}'.format(g2) 
+# ax_d.plot(R, rho_dehnen_c(R,p2,a2,b2,g2), color='darkred', lw=0.75, ls='-.', label=fit_string2) # , linestyle=':' 
+
+popt3, pcov3 = curve_fit(rho_plummer, R, D, p0=[m0,a0], bounds=([7000.,0.], [7500.,1.]))
+a3 = popt3[1]
+m3 = popt3[0]
+# ax_d.plot(R, rho_plummer(R,m3,a3), color='lightcoral', lw=0.7, label='Fit 3:\n'+r'$a=$\,'+'{:.3f} pc'.format(a3)+'\n'+r'$M=$\,'+'{:.0f}'.format(m3))
+
+popt4, pcov4 = curve_fit(rho_plummer_b, R, D, p0=a0, bounds=(0., 1.))
+perr4 = np.sqrt(np.diag(pcov4))
+a4 = popt4[0]
+ea4 = perr4[0]
+ax_d.plot(R, rho_plummer_b(R,a4), color='lightcoral', lw=0.75, label='Plummer Fit:\n'+r'$a=$\,'+'({:.4f} '.format(a4)+r'$\pm$'+' {:.4f}) pc'.format(ea4)+'\n'+r'$M=$\,'+r'$73\% \,M_0 = 7.3 \cdot 10^3 \, M_{\odot}$')
+
+# ax_d.plot(R, rho_plummer_b(R,a0), color='lightcoral', ls='-.', lw=0.7, label='Guess 2:\n'+r'$a=$\,'+'{:.3f} pc'.format(a0)+'\n'+r'$M=$\,'+'{:.0f}'.format(m0))
 
 ax_d.legend(frameon=True)
 

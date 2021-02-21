@@ -1,3 +1,5 @@
+# IMPORT LIBRARIES
+
 import	os
 import	argparse
 import	datetime
@@ -72,6 +74,9 @@ def pdf_ph(ph):
 def pdf_th(th):
 	return 0.5 * np.sin(th)
 
+def pdf_plum(r,a):
+	return 3 * r**2 / a**3 / (1 + r**2 / a**2)**(5/2)
+
 # The circular velocity of the Plummer sphere, and derivative formulae
 
 def v_circ(r):
@@ -132,7 +137,7 @@ def histo_pdf_plotter_log(ax, x_min, x_max, x_bins, func, npar):
 	log_max = np.log10(x_max)
 	x = np.logspace(log_min, log_max, 1000)
 	if npar == 1:
-		f_x = func(x, aaa) # * N
+		f_x = func(x, aa) # * N
 		ax.plot(x, f_x, color='black', lw=0.9)
 	elif npar == 0:
 		f_x = func(x) # * N
@@ -146,7 +151,7 @@ def histo_pdf_plotter_log(ax, x_min, x_max, x_bins, func, npar):
 		for i in range(9):
 			x_temp = x_mid + x_step / 15 * (i-4)
 			if npar == 1:
-				f_temp = func(x_mid, aaa) #* N
+				f_temp = func(x_mid, aa) #* N
 			elif npar == 0:
 				f_temp = func(x_mid) # * N
 			e_temp = np.sqrt(f_temp * I) / I # np.sqrt(f_temp) # 
@@ -165,7 +170,7 @@ def histo_pdf_norm_log(ax, x_min, x_max, x_bins, func, npar):
 	log_max = np.log10(x_max)
 	x = np.logspace(log_min, log_max, 1000)
 	if npar == 1:
-		norm , fuffa = quad(func, x_max, x_max, aaa)
+		norm , fuffa = quad(func, x_max, x_max, aa)
 		f_x = func(x, a) # * N / norm
 		ax.plot(x, f_x, color='black', lw=0.9)
 	elif npar == 0:
@@ -311,7 +316,7 @@ else:
 
 T_collapse_sim = T[t_collapse]
 
-print("DT/T = {:.2e}".format((T_collapse-T_collapse_sim)/T_collapse))
+print("DT/T = {:.4e}".format((T_collapse-T_collapse_sim)/T_collapse))
 
 rho = M_tot / ( 4. * np.pi / 3. * a**3.)
 
@@ -508,11 +513,11 @@ for k in [0,2,4,6,8]: # range(9):
 	ax_l.plot(T, l_averaged[k,0,:], ls=':', label=r'$\langle l(r=R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
 '''
 
-ax_l.plot(T, l_tot[0,:], color='black', label=r'$|\,\vec{l}_{tot} \,| = \frac{1}{N} \sum_i{\vec{l}_i}\,|$') # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_l.plot(T, l_mean, color='black' , ls='--', label=r'$\langle \,|\,\vec{l}\,|\, \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_l.plot(T, l_tot[0,:], color='black', label=r'$|\,\vec{l}_{tot} \,| = \frac{1}{N} \sum_i{\vec{l}_i}\,|$')
+ax_l.plot(T, l_mean, color='black' , ls='--', label=r'$\langle \,|\,\vec{l}\,|\, \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')
 ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
-ax_l.legend(frameon=True, loc=2) #, bbox_to_anchor=(1.01,1)) 
+ax_l.legend(frameon=True, loc=2)
 fig_l.tight_layout()
 
 fig_l.savefig("C2_Results_PNG/Angular_Momentum_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
@@ -573,7 +578,7 @@ for rep in range(10):
 			V[i,j+1,:] = V[i,j+1,:] - V_cm[j+1,:]
 		X[i,0,:] = np.sqrt(X[i,1,:]**2 + X[i,2,:]**2 + X[i,3,:]**2)
 		V[i,0,:] = np.sqrt(V[i,1,:]**2 + V[i,2,:]**2 + V[i,3,:]**2)
-		K[i,:] = 0.5 * (V[i,0,:])**2 * 1e10
+		# K[i,:] = 0.5 * (V[i,0,:])**2 * 1e10
 		E[i,:] = P[i,:] + K[i,:]
 		P_rf[:] += 0.5 * P[i,:]
 		K_rf[:] += K[i,:]
@@ -581,16 +586,22 @@ for rep in range(10):
 
 R_35_t = np.zeros(NT)
 R_75_t = np.zeros(NT)
+R_50_t = np.zeros(NT)
+R_65_t = np.zeros(NT)
 
 for t in range(NT):
 	C = np.copy(X[:,0,t])
 	C = np.sort(C)
 	R_35_t[t] = C[int(np.ceil(I/10*3.5)-1)]
 	R_75_t[t] = C[int(np.ceil(I/10*7.5)-1)]
+	R_50_t[t] = C[int(np.ceil(I/10*5.0)-1)]
+	R_65_t[t] = C[int(np.ceil(I/10*6.5)-1)]
 
 t_test    = int(2.3 * np.argmin(R_35_t[:]))
 r_35_test = np.amin(R_35_t[:])
 r_35_end  = R_35_t[-1]
+r_50_end  = R_50_t[-1]
+r_65_end  = R_65_t[-1]
 r_75_end  = R_75_t[-1]
 
 time_prog_CM_2 = timer()
@@ -611,7 +622,7 @@ ax_LRCM.set_xlim(0, t_max)
 ax_LRCM.set_ylim(0, lim_3d)
 ax_LRCM.set_title('Lagrangian radii as functions of time - Remnant R.F.',fontsize=10)
 ax_LRCM.set_xlabel(r'$t\;$[Myr]')
-ax_LRCM.set_ylabel(r'$r\;$[pc]') # , rotation='horizontal', horizontalalignment='right'
+ax_LRCM.set_ylabel(r'$r\;$[pc]')
 
 
 RLCM = np.zeros((9,NT))
@@ -645,7 +656,7 @@ ax_ECM.set_xlim(0, t_max)
 # ax_ECM.set_aspect(t_max / 6e17)
 ax_ECM.set_title('Total energies as functions of time - Remnant R.F.\n',fontsize=10)
 ax_ECM.set_xlabel(r'$t\;$[Myr]')
-ax_ECM.set_ylabel(r'$E\;$[erg/g]') # , rotation='horizontal', horizontalalignment='right'
+ax_ECM.set_ylabel(r'$E\;$[erg/g]')
 
 ax_ECM.plot(T, E_rf, linestyle=':',  color='black', markersize=1, label=r'$E_{tot}$')
 ax_ECM.plot(T, P_rf, linestyle='-.', color='black', markersize=1, label=r'$E_{pot}$')
@@ -658,7 +669,7 @@ for t in range(NT):
 			E_Vir[t] += 0.5 * P[i,t] + 2. * K[i,t] 
 ax_ECM.plot(T, E_Vir, color='black' , markersize=1, label=r'$2E_{kin}^{Remn}+E_{pot}^{Remn}$') # linestyle=(0, (3, 5, 1, 5, 1, 5)) 
 
-ax_ECM.legend(frameon=True, loc=1) #, bbox_to_anchor=(1.01,1))
+ax_ECM.legend(frameon=True, loc=1)
 fig_ECM.tight_layout()
 
 fig_ECM.savefig("C2_Results_PNG/Energy_CM_{:s}.png".format(plotfile), bbox_inches='tight', dpi=400)
@@ -790,22 +801,23 @@ for k in range(9):
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
-ax_L.set_ylim(1e-1,1e1)
+ax_L.set_ylim(0,2)		# (1e-1,1e1)
+ax_L.set_aspect(t_max / 2.)
 ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
-ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
-ax_L.set_yscale('log')
+ax_L.set_ylabel(r'$l\;$[pc km/s]')
+# ax_L.set_yscale('log')
 
 '''
 for k in [0,2,4,6,8]: # range(9):
 	ax_L.plot(T, l_averaged[k,0,:], ls=':', label=r'$\langle l(r=R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
 '''
-ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$") # = \frac{1}{N} | \sum_i{\vec{r}_i\times \vec{v}_i} \,|
-ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
+ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$")
+ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")
 
-ax_L.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_L.vlines(T_collapse, ymin=0., ymax=20., linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
-ax_L.legend(frameon=True, loc=1) # , loc=4, bbox_to_anchor=(1.01,1)
+ax_L.legend(frameon=True, loc=7)
 fig_L.tight_layout()
 
 fig_L.savefig("C2_Results_PNG/Angular_Momentum_CMRF_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
@@ -823,17 +835,18 @@ print()
 fig_VX , ax_VX = plt.subplots(figsize=(5.5,5.5))
 fig_VY , ax_VY = plt.subplots(figsize=(5.5,5.5))
 fig_VZ , ax_VZ = plt.subplots(figsize=(5.5,5.5))
-fig_V = [fig_VX , fig_VY, fig_VZ]
-ax_V = [ax_VX, ax_VY, ax_VZ]
-sc_V = []
+fig_V  = [fig_VX , fig_VY, fig_VZ]
+ax_V   = [ax_VX, ax_VY, ax_VZ]
+sc_V   = []
 cbar_V = []
+
 axis_n = ['', '$x$', '$y$', '$z$']
 cbar_n = ['', r'$v_{x}$', r'$v_{y}$', r'$v_{z}$']
 index_1 = [1,2,3]
 index_2 = [2,3,1] 
 index_3 = [3,1,2]
 
-tt = -1
+tt = -1 # -1
 X_tt = [[],[],[],[]]
 V_tt = [[],[],[],[]]
 for i in range(I):
@@ -847,25 +860,89 @@ V_tt = np.array(V_tt)
 print('len X[:,0,-1] = {:d}'.format(len(X[:,0,tt])))
 print('len X_tt[:,0] = {:d}'.format(len(X_tt[:,0])))
 
+zoom = 2. # 2. # 0.5
+
 for i in range(3):
 	j = index_1[i]
 	k = index_2[i]
 	q = index_3[i]
-	ax_V[i].set_title('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[-1]),fontsize=10)
+	ax_V[i].set_title('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[tt]),fontsize=10)
 	ax_V[i].grid(linestyle=':', which='both')
-	ax_V[i].set_xlim(-2.,+2.)
-	ax_V[i].set_ylim(-2.,+2.)	
+	ax_V[i].set_xlim(-zoom,+zoom)
+	ax_V[i].set_ylim(-zoom,+zoom)	
 	ax_V[i].set_aspect(1)	
-	# sc_V.append( ax_V[i].scatter(X[:,k,-1], X[:,q,-1], c=V[:,j,-1], s=0.05, vmin=-5, vmax=5) )
-	sc_V.append( ax_V[i].scatter(X_tt[k,:], X_tt[q,:], c=V_tt[j,:], s=0.05, vmin=-5, vmax=5) )
-	cbar_V.append( fig_V[i].colorbar(sc_V[i], ax = ax_V[i]) )
-	ax_V[i].set_xlabel(axis_n[k] + '[pc]')
-	ax_V[i].set_ylabel(axis_n[q] + '[pc]')
+	sc_V.append( ax_V[i].scatter(X_tt[k,:], X_tt[q,:], c=V_tt[j,:], s=0.05, vmin=-0.001, vmax=+0.001) )
+	cbar_V.append( fig_V[i].colorbar(sc_V[i], ax=ax_V[i], ticks=[-0.001, +0.001]) )
+	
+	counts_neg = 0
+	counts_pos = 0
+	counts_v_neg = 0
+	counts_v_pos = 0
+	counts_tot = len(X_tt[k,:])
+	kk = 1
+	if j == 1:
+		kk = k
+	elif j == 2:
+		kk = q
+	for num in range(counts_tot):
+		if X_tt[kk,num] < 0.:
+			counts_neg += 1
+			if V_tt[j,num] > 0.:
+				counts_v_pos += 1
+		else:
+			counts_pos += 1
+			if V_tt[j,num] < 0.:
+				counts_v_neg += 1
+	pos = counts_v_pos / counts_neg * 100.
+	neg = counts_v_neg / counts_pos * 100.
+	
+	if j == 1:
+		string_label = '{:.2f} $\%$ particles with $ y < 0 $ have '.format(pos) + r'$ v_{x} > 0$' + '\n' + '{:.2f} $\%$ particles with $ y > 0 $ have '.format(neg) + r'$ v_{x} < 0$'
+		ax_V[i].vlines(0, ymin=-zoom, ymax=+zoom, color='black', lw=0.75, label=string_label)
+	elif j == 2:
+		string_label = '{:.2f} $\%$ particles with $ x < 0 $ have '.format(pos) + r'$ v_{y} > 0$' + '\n' + '{:.2f} $\%$ particles with $ x > 0 $ have '.format(neg) + r'$ v_{y} < 0$'
+		ax_V[i].hlines(0, xmin=-zoom, xmax=+zoom, color='black', lw=0.75, label=string_label)
+	
+	ax_V[i].legend(frameon=True,loc=1)
+	cbar_V[i].ax.set_yticklabels(['$ < 0 $', '$ > 0 $']) 
+	ax_V[i].set_xlabel(axis_n[k]  + '[pc]')
+	ax_V[i].set_ylabel(axis_n[q]  + '[pc]')
 	cbar_V[i].set_label(cbar_n[j] + '[km/s]')
 
 for i in range(3):
-	fig_V[i].savefig("C2_Results_PNG/Velocity_Tight_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
-	fig_V[i].savefig("C2_Results_EPS/Velocity_Tight_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
+	fig_V[i].savefig("C2_Results_PNG/Velocity_Small_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
+	fig_V[i].savefig("C2_Results_EPS/Velocity_Small_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
+
+
+fig_VX , ax_VX = plt.subplots(figsize=(5.5,5.5))
+fig_VY , ax_VY = plt.subplots(figsize=(5.5,5.5))
+fig_VZ , ax_VZ = plt.subplots(figsize=(5.5,5.5))
+fig_V  = [fig_VX , fig_VY, fig_VZ]
+ax_V   = [ax_VX, ax_VY, ax_VZ]
+sc_V   = []
+cbar_V = []
+
+zoom = 2. # 2. # 0.5
+
+for i in range(3):
+	j = index_1[i]
+	k = index_2[i]
+	q = index_3[i]
+	ax_V[i].set_title('Velocity along the ' + axis_n[j] + '-axis on the ' + axis_n[k] + axis_n[q] + '-plane' + '\n' + '$ t = {:.3f} $ Myr - Remnant R.F.\n'.format(T[tt]),fontsize=10)
+	ax_V[i].grid(linestyle=':', which='both')
+	ax_V[i].set_xlim(-zoom,+zoom)
+	ax_V[i].set_ylim(-zoom,+zoom)	
+	ax_V[i].set_aspect(1)	
+	sc_V.append( ax_V[i].scatter(X_tt[k,:], X_tt[q,:], c=V_tt[j,:], s=0.05, vmin=-15, vmax=+15) )
+	cbar_V.append( fig_V[i].colorbar(sc_V[i], ax = ax_V[i]) )
+	ax_V[i].set_xlabel(axis_n[k]  + '[pc]')
+	ax_V[i].set_ylabel(axis_n[q]  + '[pc]')
+	cbar_V[i].set_label(cbar_n[j] + '[km/s]')
+
+for i in range(3):
+	fig_V[i].savefig("C2_Results_PNG/Velocity_{:}_cmap_CM_{:}.png".format(i+1, plotfile), bbox_inches='tight', dpi=400)
+	fig_V[i].savefig("C2_Results_EPS/Velocity_{:}_cmap_CM_{:}.eps".format(i+1, plotfile), bbox_inches='tight')
+
 
 print()
 print('Fig saved: Velcity color maps, RF CM')
@@ -924,33 +1001,29 @@ print()
 
 ##################################################################################################
 
-# TRY TO FIT THE DENSITY PROFILE WITH A DEHNEN DENSITY PROFILE - FAILURE
+# TRY TO FIT THE DENSITY PROFILE WITH A PLUMMER DENSITY PROFILE 
 
-def rho_dehnen(r,M,a,g):
-	return (3-g)*M/(4*np.pi) * a / ( r**g * (r+a)**(4-g) )
+def rho_plummer(r,M,A):
+	return M / ( 4. * np.pi / 3. * A**3 ) * (1 + r**2 / A**2 )**(- 5. / 2.)
 
-# print("R_35_test = {:.4f} pc at t_test = {:.4f} Myr".format(r_35_test,T[t_test]))
+def rho_plummer_b(r,A):
+	return 7300. / ( 4. * np.pi / 3. * A**3 ) * (1 + r**2 / A**2 )**(- 5. / 2.)
 
-cut = np.all([R_log_c >= 2e-1, R_log_c <= 6e0], axis=0)		# cut = np.all([R_log_c >= 1e-1, R_log_c <= 4e0], axis=0)
-# ax_D.plot(R_log_c[cut], 0.7 * M_tot * 3. / ( 4*np.pi * R_log_c[cut]**3 ), linestyle=':' , color='darkred', label=r'$0.7 \, M_0 \, (\frac{4\pi}{3}\,r^3\,)^{-1}$')
+cut = np.all([R_log_c >= 2e-2, R_log_c <= 7e0], axis=0)		# cut = np.all([R_log_c >= 1e-1, R_log_c <= 4e0], axis=0)
 
-'''
-popt, pcov = curve_fit(rho_dehnen, R_log_c[cut], D_log[cut], p0=[7e3,0.5,1.], bounds=([1e3,0,0], [1e4,5,5]))
-MM = popt[0]
-aa = popt[1]
-gg = popt[2]
-#ax_D.plot(R_log_c, rho_dehnen(R_log_c,MM,aa,gg), linestyle=':' , color='darkred', label='$Fit:$\n'+r'$a=$\,'+'{:.3f} pc'.format(aa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MM)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(gg))
-MMM = 0.65*M_tot
-aaa = r_35_end / (1. + np.sqrt(2.)) * 1.2
-ggg = 1
-# ax_D.plot(R_log_c, rho_dehnen(R_log_c,MMM,aaa,ggg), linestyle=':' , color='darkred', label='Fit:\n'+r'$a=$\,'+'{:.3f} pc'.format(aaa)+'\n'+r'$M=$\,'+'{:.0f}'.format(MMM)+r'\,M$_{\odot}$'+'\n'+r'$\gamma=$\,'+'{:.2f}'.format(ggg))
-# ax_D.legend(frameon=True) #, bbox_to_anchor=(1.01,1)) 
-'''
+ax_D.set_xlim(2e-2,7e0)
 
+popt, pcov = curve_fit(rho_plummer_b, R_log_c[cut], D_log[cut], p0=0.2, bounds=(0.,1.))
+perr = np.sqrt(np.diag(pcov))
+aa = popt[0]
+ea = perr[0]
+ax_D.plot(R_log_c[cut], rho_plummer_b(R_log_c[cut],aa), color='lightcoral', lw=0.85, label='Plummer Fit:\n'+r'$a=$\,'+'({:.4f} '.format(aa)+r'$\pm$'+' {:.4f}) pc'.format(ea)+'\n'+r'$M=$\,'+r'$73\% \,M_0 = 7.3 \cdot 10^3 \, M_{\odot}$')
+
+ax_D.legend(frameon=True, loc=3)
 fig_D.tight_layout()
 
-fig_D.savefig("C2_Results_PNG/Density_Profile_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
-fig_D.savefig("C2_Results_EPS/Density_Profile_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+fig_D.savefig("C2_Results_PNG/Density_Profile_Fit_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_D.savefig("C2_Results_EPS/Density_Profile_Fit_{:}.eps".format(plotfile), bbox_inches='tight')
 
 print()
 print('Fig saved: Density profile, RF CM')
@@ -988,7 +1061,7 @@ ax_h_Th = fig_h.add_subplot(gs[1,2:3])
 
 R_bins = np.logspace(oom_r_min_tt, oom_r_max_tt, 41)
 ax_h_R.hist(R[R < r_75_end], bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
-# histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_hern_r, npar=1)
+histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_plum, npar=1)
 ax_h_R.set_xscale('log')
 
 # R_bins = np.linspace(r_min_tt, r_max_tt, 41)
@@ -1001,7 +1074,7 @@ ax_h_R.set_xlim(r_min_tt, r_max_tt)
 ax_h_R.set_ylim(None,None)
 ax_h_R.grid(ls=':',which='both')
 
-Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12) # , step=th_step)
+Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12)
 ax_h_Th.hist(Th[R < r_75_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
 ax_h_Th.set_title('Position-space'+'\n'+'Polar angle pdf',fontsize=10)
@@ -1011,7 +1084,7 @@ ax_h_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
 ax_h_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
 ax_h_Th.grid(ls=':',which='both')
 
-Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24) #,step=ph_step)
+Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24)
 ax_h_Ph.hist(Ph[R < r_75_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
 ax_h_Ph.set_title('Position-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
@@ -1083,7 +1156,7 @@ ax_v_V.set_xlim(v_min_tt, v_max_tt)
 ax_v_V.set_ylim(None,None)
 ax_v_V.grid(ls=':',which='both')
 
-Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12) # , step=th_step)
+Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12)
 ax_v_Th.hist(Th[R < r_75_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_v_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
 ax_v_Th.set_title('Velocity-space'+'\n'+'Polar angle pdf',fontsize=10)
@@ -1093,7 +1166,7 @@ ax_v_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
 ax_v_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
 ax_v_Th.grid(ls=':',which='both')
 
-Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24) #,step=ph_step)
+Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24)
 ax_v_Ph.hist(Ph[R < r_75_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_v_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
 ax_v_Ph.set_title('Velocity-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
@@ -1104,8 +1177,8 @@ ax_v_Ph.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.
 ax_v_Ph.grid(ls=':',which='both')
 
 fig_v.tight_layout()
-fig_h.savefig("C2_Results_PNG/Histograms_V_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
-fig_h.savefig("C2_Results_EPS/Histograms_V_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+fig_v.savefig("C2_Results_PNG/Histograms_V_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_v.savefig("C2_Results_EPS/Histograms_V_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
 
 time_prog_end = timer()
 
