@@ -17,7 +17,6 @@ from	timeit					import default_timer as timer
 from	astropy.modeling 		import models, fitting
 from	scipy.optimize			import curve_fit
 from	scipy.integrate 		import quad, ode
-# from scipy.special import erf
 
 #######################################################################################################
 #######################################################################################################
@@ -33,13 +32,8 @@ plt.rcParams.update({
 #######################################################################################################
 #######################################################################################################
 
-if len(sys.argv) > 2:
-	sys.exit('ARGV ERROR, TRY:   python   Analyse_C1.py'+'\n'+'ARGV ERROR, TRY:   python   Analyse_C1.py   savesnaps=Y/N'+'\n')
-
-if len(sys.argv) == 1:
-	save = 'savesnaps=N'
-elif len(sys.argv) == 2:
-	save = sys.argv[1]
+if len(sys.argv) > 1:
+	sys.exit('ARGV ERROR, TRY:   python   Analyse_A.py' + '\n')
 
 #######################################################################################################
 #######################################################################################################
@@ -93,107 +87,6 @@ def pdf_v_2(v):
 def pdf_l_1(l):
 	k = 0.05 * np.sqrt( rho * 4. * np.pi / 3. ) * V0 / R0
 	return 1.5 / (a**3 * R0**3) / (k**(3./2.)) * l**(1./2.) 
-
-# A plotting primer for PDFs over histograms
-
-def histo_pdf_plotter(ax, x_lim, x_step, x_bins, func, npar, x_min=0.):
-	x = np.linspace(x_min, x_lim, 10000)
-	if npar == 1:
-		f_x = func(x, a)
-		ax.plot(x, f_x, color='black', lw=0.9)
-	elif npar == 0:
-		f_x = func(x)
-		ax.plot(x, f_x, color='black', lw=0.9)
-	for j in range(len(x_bins)):
-		x = []
-		f_x = []
-		e_x = []
-		x_mid = x_bins[j] + x_step / 2
-		for i in range(9):
-			x_temp = x_bins[j] + x_step / 2 + x_step / 15 * (i-4)
-			if npar == 1:
-				f_temp = func(x_mid, a)
-			elif npar == 0:
-				f_temp = func(x_mid)
-			e_temp = np.sqrt(f_temp * I) / I
-			# ax.vlines(x_mid, ymin=f_temp-e_temp, ymax=f_temp+e_temp, color='black', lw=0.9)
-			x.append(x_temp)
-			f_x.append(f_temp)
-			e_x.append(e_temp)
-		x = np.array(x)
-		f_x = np.array(f_x)
-		e_x = np.array(e_x)
-		# ax.plot(x, f_x + e_x, color='black', lw=0.9)
-		# ax.plot(x, f_x - e_x, color='black', lw=0.9)
-
-def histo_pdf_plotter_log(ax, x_min, x_max, x_bins, func, npar):
-	log_min = np.log10(x_min)
-	log_max = np.log10(x_max)
-	x = np.logspace(log_min, log_max, 1000)
-	if npar == 1:
-		f_x = func(x, aaa) # * N
-		ax.plot(x, f_x, color='black', lw=0.9)
-	elif npar == 0:
-		f_x = func(x) # * N
-		ax.plot(x, f_x, color='black', lw=0.9)
-	for j in range(len(x_bins)-1):
-		x = []
-		f_x = []
-		e_x = []
-		x_mid = (x_bins[j+1] + x_bins[j]) / 2.
-		x_step = x_bins[j+1] - x_bins[j]
-		for i in range(9):
-			x_temp = x_mid + x_step / 15 * (i-4)
-			if npar == 1:
-				f_temp = func(x_mid, aaa) #* N
-			elif npar == 0:
-				f_temp = func(x_mid) # * N
-			e_temp = np.sqrt(f_temp * I) / I # np.sqrt(f_temp) # 
-			# ax.vlines(x_mid, ymin=f_temp-e_temp, ymax=f_temp+e_temp, color='black', lw=0.9)
-			x.append(x_temp)
-			f_x.append(f_temp)
-			e_x.append(e_temp)
-		x = np.array(x)
-		f_x = np.array(f_x)
-		e_x = np.array(e_x)
-		# ax.plot(x, f_x + e_x, color='black', lw=0.9)
-		# ax.plot(x, f_x - e_x, color='black', lw=0.9)
-
-def histo_pdf_norm_log(ax, x_min, x_max, x_bins, func, npar):
-	log_min = np.log10(x_min)
-	log_max = np.log10(x_max)
-	x = np.logspace(log_min, log_max, 1000)
-	if npar == 1:
-		norm , fuffa = quad(func, x_max, x_max, aaa)
-		f_x = func(x, a) # * N / norm
-		ax.plot(x, f_x, color='black', lw=0.9)
-	elif npar == 0:
-		norm , fuffa = quad(func, x_max, x_max)
-		f_x = func(x) / norm
-		ax.plot(x, f_x, color='black', lw=0.9)
-	for j in range(len(x_bins)-1):
-		x = []
-		f_x = []
-		e_x = []
-		x_mid = (x_bins[j+1] + x_bins[j]) / 2.
-		x_step = x_bins[j+1] - x_bins[j]
-		for i in range(9):
-			x_temp = x_mid + x_step / 15 * (i-4)
-			if npar == 1:
-				f_temp = func(x_mid, a) #* N
-			elif npar == 0:
-				f_temp = func(x_mid) # * N
-			e_temp = np.sqrt(f_temp * I) / I # np.sqrt(f_temp) # 
-			# ax.vlines(x_mid, ymin=f_temp-e_temp, ymax=f_temp+e_temp, color='black', lw=0.9)
-			x.append(x_temp)
-			f_x.append(f_temp)
-			e_x.append(e_temp)
-		x = np.array(x)
-		f_x = np.array(f_x)
-		e_x = np.array(e_x)
-		# ax.plot(x, f_x + e_x, color='black', lw=0.9)
-		# ax.plot(x, f_x - e_x, color='black', lw=0.9)
-
 
 #######################################################################################################
 #######################################################################################################
@@ -370,25 +263,6 @@ for t in range(NT):
 		l_mean[t]  += l[i,0,t] / I
 	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
-
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
-
 ax_l.grid(linestyle=':',which='both')
 ax_l.set_xlim(0, t_max)
 ax_l.set_ylim(1e-1,2e1)
@@ -460,18 +334,18 @@ for rep in range(10):
 	E_rf[:] = P_rf[:] + K_rf[:]
 
 R_35_t = np.zeros(NT)
-R_75_t = np.zeros(NT)
+R_73_t = np.zeros(NT)
 
 for t in range(NT):
 	C = np.copy(X[:,0,t])
 	C = np.sort(C)
 	R_35_t[t] = C[int(np.ceil(I/10*3.5)-1)]
-	R_75_t[t] = C[int(np.ceil(I/10*7.5)-1)]
+	R_73_t[t] = C[int(np.ceil(I/10*7.3)-1)]
 
 t_test    = int(2.3 * np.argmin(R_35_t[:]))
 r_35_test = np.amin(R_35_t[:])
 r_35_end  = R_35_t[-1]
-r_75_end  = R_75_t[-1]
+r_73_end  = R_73_t[-1]
 
 time_prog_CM_2 = timer()
 
@@ -494,36 +368,23 @@ for t in range(NT):
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
 
-		l_mean[t]  += l[i,0,t] / I
-
 		# to check again that the ang mom is conserved and plot it, add X_cm, V_cm to X_i , V_i 
-		l_tot[1,t] += (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] )
-		l_tot[2,t] += (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] )
-		l_tot[3,t] += (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] )
+		l_tot[1,t] += ( (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] ) ) / I
+		l_tot[2,t] += ( (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] ) ) / I
+		l_tot[3,t] += ( (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] ) ) / I
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2)
 
-	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
-
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
+for t in range(NT):
+	H = 0
+	for i in range(I):
+		if X[i,0,t] < R_73_t[t]:
+			H += 1
+			l_mean[t] += l[i,0,t]
+	l_mean[t] = l_mean[t] / H
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
-ax_L.set_ylim(0.,2)				# (1e-1,3e0)
+ax_L.set_ylim(0.,1.75)				# (1e-1,3e0)
 ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
@@ -552,7 +413,7 @@ ax_D.set_xscale('log')
 ax_D.set_yscale('log')
 
 R_remn = np.copy(X[:,0,tt])
-R_remn = R_remn[R_remn < r_75_end]
+R_remn = R_remn[R_remn < r_73_end]
 
 tt = -1
 m_i = M[0,tt]
@@ -732,26 +593,6 @@ for t in range(NT):
 		l_mean[t]  += l[i,0,t] / I
 	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
-
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
-
-
 ax_l.set_title('Average angular momentum as a function of time\n',fontsize=10)
 ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
@@ -818,18 +659,18 @@ for rep in range(10):
 	E_rf[:] = P_rf[:] + K_rf[:]
 
 R_35_t = np.zeros(NT)
-R_75_t = np.zeros(NT)
+R_73_t = np.zeros(NT)
 
 for t in range(NT):
 	C = np.copy(X[:,0,t])
 	C = np.sort(C)
 	R_35_t[t] = C[int(np.ceil(I/10*3.5)-1)]
-	R_75_t[t] = C[int(np.ceil(I/10*7.5)-1)]
+	R_73_t[t] = C[int(np.ceil(I/10*7.3)-1)]
 
 t_test    = int(2.3 * np.argmin(R_35_t[:]))
 r_35_test = np.amin(R_35_t[:])
 r_35_end  = R_35_t[-1]
-r_75_end  = R_75_t[-1]
+r_73_end  = R_73_t[-1]
 
 time_prog_CM_2 = timer()
 
@@ -850,32 +691,19 @@ for t in range(NT):
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
 
-		l_mean[t]  += l[i,0,t] / I
-
 		# to check again that the ang mom is conserved and plot it, add X_cm, V_cm to X_i , V_i 
-		l_tot[1,t] += (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] )
-		l_tot[2,t] += (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] )
-		l_tot[3,t] += (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] )
+		l_tot[1,t] += ( (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] ) ) / I
+		l_tot[2,t] += ( (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] ) ) / I
+		l_tot[3,t] += ( (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] ) ) / I
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2)
 
-	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
-
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
+for t in range(NT):
+	H = 0
+	for i in range(I):
+		if X[i,0,t] < R_73_t[t]:
+			H += 1
+			l_mean[t] += l[i,0,t]
+	l_mean[t] = l_mean[t] / H
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
@@ -900,7 +728,7 @@ ax_D.set_xscale('log')
 ax_D.set_yscale('log')
 
 R_remn = np.copy(X[:,0,tt])
-R_remn = R_remn[R_remn < r_75_end]
+R_remn = R_remn[R_remn < r_73_end]
 
 tt = -1
 m_i = M[0,tt]
@@ -1082,26 +910,6 @@ for t in range(NT):
 		l_mean[t]  += l[i,0,t] / I
 	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
-
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
-
-
 ax_l.plot(T, l_tot[0,:], color='khaki', label=r'Case 3: $ |\,\vec{l}_{tot}\,| $')
 ax_l.plot(T, l_mean, color='khaki' , ls='--', label=r'Case 3: $\langle\,|\, \vec{l}\,|\, \rangle $')
 
@@ -1166,18 +974,18 @@ for rep in range(10):
 	E_rf[:] = P_rf[:] + K_rf[:]
 
 R_35_t = np.zeros(NT)
-R_75_t = np.zeros(NT)
+R_73_t = np.zeros(NT)
 
 for t in range(NT):
 	C = np.copy(X[:,0,t])
 	C = np.sort(C)
 	R_35_t[t] = C[int(np.ceil(I/10*3.5)-1)]
-	R_75_t[t] = C[int(np.ceil(I/10*7.5)-1)]
+	R_73_t[t] = C[int(np.ceil(I/10*7.3)-1)]
 
 t_test    = int(2.3 * np.argmin(R_35_t[:]))
 r_35_test = np.amin(R_35_t[:])
 r_35_end  = R_35_t[-1]
-r_75_end  = R_75_t[-1]
+r_73_end  = R_73_t[-1]
 
 time_prog_CM_2 = timer()
 
@@ -1198,36 +1006,22 @@ for t in range(NT):
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
 
-		l_mean[t]  += l[i,0,t] / I
-
 		# to check again that the ang mom is conserved and plot it, add X_cm, V_cm to X_i , V_i 
-		l_tot[1,t] += (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] )
-		l_tot[2,t] += (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] )
-		l_tot[3,t] += (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] )
+		l_tot[1,t] += ( (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] ) ) / I
+		l_tot[2,t] += ( (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] ) ) / I
+		l_tot[3,t] += ( (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] ) ) / I
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2)
 
-	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
-
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
+for t in range(NT):
+	H = 0
+	for i in range(I):
+		if X[i,0,t] < R_73_t[t]:
+			H += 1
+			l_mean[t] += l[i,0,t]
+	l_mean[t] = l_mean[t] / H
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
-# ax_L.set_aspect(t_max / (2e1 - 7e-6))
 ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignment='right'
@@ -1235,7 +1029,7 @@ ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignmen
 ax_L.plot(T, l_tot[0,:], color='khaki', label=r"Case 3: $|\,\vec{l}_{tot} \,| $") 
 ax_L.plot(T, l_mean, color='khaki' , ls='--', label=r"Case 3: $\langle \,|\,\vec{l}'\,|\, \rangle $")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
-ax_L.legend(frameon=True) #, loc=2) #, bbox_to_anchor=(1.01,1)) 
+ax_L.legend(frameon=True, loc=7) #, bbox_to_anchor=(1.01,1)) 
 
 ##################################################################################################
 ##################################################################################################
@@ -1243,7 +1037,7 @@ ax_L.legend(frameon=True) #, loc=2) #, bbox_to_anchor=(1.01,1))
 tt = -1
 
 R_remn = np.copy(X[:,0,tt])
-R_remn = R_remn[R_remn < r_75_end]
+R_remn = R_remn[R_remn < r_73_end]
 
 tt = -1
 m_i = M[0,tt]

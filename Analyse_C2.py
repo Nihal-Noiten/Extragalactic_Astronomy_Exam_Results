@@ -585,7 +585,7 @@ for rep in range(10):
 	E_rf[:] = P_rf[:] + K_rf[:]
 
 R_35_t = np.zeros(NT)
-R_75_t = np.zeros(NT)
+R_73_t = np.zeros(NT)
 R_50_t = np.zeros(NT)
 R_65_t = np.zeros(NT)
 
@@ -593,7 +593,7 @@ for t in range(NT):
 	C = np.copy(X[:,0,t])
 	C = np.sort(C)
 	R_35_t[t] = C[int(np.ceil(I/10*3.5)-1)]
-	R_75_t[t] = C[int(np.ceil(I/10*7.5)-1)]
+	R_73_t[t] = C[int(np.ceil(I/10*7.3)-1)]
 	R_50_t[t] = C[int(np.ceil(I/10*5.0)-1)]
 	R_65_t[t] = C[int(np.ceil(I/10*6.5)-1)]
 
@@ -602,7 +602,7 @@ r_35_test = np.amin(R_35_t[:])
 r_35_end  = R_35_t[-1]
 r_50_end  = R_50_t[-1]
 r_65_end  = R_65_t[-1]
-r_75_end  = R_75_t[-1]
+r_73_end  = R_73_t[-1]
 
 time_prog_CM_2 = timer()
 
@@ -665,7 +665,7 @@ ax_ECM.plot(T, K_rf, linestyle='--', color='black', markersize=1, label=r'$E_{ki
 E_Vir = np.zeros(NT)
 for t in range(NT):
 	for i in range(I):
-		if X[i,0,t] < R_75_t[t]:
+		if X[i,0,t] < R_73_t[t]:
 			E_Vir[t] += 0.5 * P[i,t] + 2. * K[i,t] 
 ax_ECM.plot(T, E_Vir, color='black' , markersize=1, label=r'$2E_{kin}^{Remn}+E_{pot}^{Remn}$') # linestyle=(0, (3, 5, 1, 5, 1, 5)) 
 
@@ -763,7 +763,6 @@ l      = np.zeros((I,4,NT))
 l_tot  = np.zeros((4,NT))
 l_mean = np.zeros(NT)
 
-
 for t in range(NT):
 	for i in range(I):
 		l[i,1,t] = X[i,2,t] * V[i,3,t] - X[i,3,t] * V[i,2,t]
@@ -771,16 +770,21 @@ for t in range(NT):
 		l[i,3,t] = X[i,1,t] * V[i,2,t] - X[i,2,t] * V[i,1,t]
 		l[i,0,t] = np.sqrt(l[i,1,t]**2 + l[i,2,t]**2 + l[i,3,t]**2)
 
-		l_mean[t]  += l[i,0,t] / I
-
 		# to check again that the ang mom is conserved and plot it, add X_cm, V_cm to X_i , V_i 
-		l_tot[1,t] += (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] )
-		l_tot[2,t] += (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] )
-		l_tot[3,t] += (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] )
+		l_tot[1,t] += ( (X[i,2,t] + _X_cm[2,t] ) * ( V[i,3,t] + _V_cm[3,t] ) - ( X[i,3,t] + _X_cm[3,t] ) * ( V[i,2,t] + _V_cm[2,t] ) ) / I
+		l_tot[2,t] += ( (X[i,3,t] + _X_cm[3,t] ) * ( V[i,1,t] + _V_cm[1,t] ) - ( X[i,1,t] + _X_cm[1,t] ) * ( V[i,3,t] + _V_cm[3,t] ) ) / I
+		l_tot[3,t] += ( (X[i,1,t] + _X_cm[1,t] ) * ( V[i,2,t] + _V_cm[2,t] ) - ( X[i,2,t] + _X_cm[2,t] ) * ( V[i,1,t] + _V_cm[1,t] ) ) / I
+	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2)
 
-	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
+for t in range(NT):
+	H = 0
+	for i in range(I):
+		if X[i,0,t] < R_73_t[t]:
+			H += 1
+			l_mean[t] += l[i,0,t]
+	l_mean[t] = l_mean[t] / H
 
-
+'''
 l_averaged = np.zeros((9,4,NT))
 for k in range(9):
 	for t in range(NT):
@@ -798,6 +802,7 @@ for k in range(9):
 			l_averaged[k,2,t] += D1[i_new] / 200 
 			l_averaged[k,3,t] += D1[i_new] / 200 
 		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
+'''
 
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
@@ -817,8 +822,9 @@ ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\
 
 ax_L.vlines(T_collapse, ymin=0., ymax=20., linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
-ax_L.legend(frameon=True, loc=7)
+ax_L.legend(frameon=True, loc=1)
 fig_L.tight_layout()
+
 
 fig_L.savefig("C2_Results_PNG/Angular_Momentum_CMRF_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
 fig_L.savefig("C2_Results_EPS/Angular_Momentum_CMRF_{:}.eps".format(plotfile), bbox_inches='tight')
@@ -850,7 +856,7 @@ tt = -1 # -1
 X_tt = [[],[],[],[]]
 V_tt = [[],[],[],[]]
 for i in range(I):
-	if X[i,0,tt] <= R_75_t[tt]:
+	if X[i,0,tt] <= R_73_t[tt]:
 		for j in range(4):
 			X_tt[j].append(X[i,j,tt])
 			V_tt[j].append(V[i,j,tt])
@@ -900,9 +906,12 @@ for i in range(3):
 		string_label = '{:.2f} $\%$ particles with $ y < 0 $ have '.format(pos) + r'$ v_{x} > 0$' + '\n' + '{:.2f} $\%$ particles with $ y > 0 $ have '.format(neg) + r'$ v_{x} < 0$'
 		ax_V[i].vlines(0, ymin=-zoom, ymax=+zoom, color='black', lw=0.75, label=string_label)
 	elif j == 2:
-		string_label = '{:.2f} $\%$ particles with $ x < 0 $ have '.format(pos) + r'$ v_{y} > 0$' + '\n' + '{:.2f} $\%$ particles with $ x > 0 $ have '.format(neg) + r'$ v_{y} < 0$'
+		string_label = '{:.2f} $\%$ particles with $ x < 0 $ have '.format(100-pos) + r'$ v_{y} < 0$' + '\n' + '{:.2f} $\%$ particles with $ x > 0 $ have '.format(100-neg) + r'$ v_{y} > 0$'
 		ax_V[i].hlines(0, xmin=-zoom, xmax=+zoom, color='black', lw=0.75, label=string_label)
-	
+	elif j == 3:
+		string_label = '{:.2f} $\%$ particles with $ x < 0 $ have '.format(pos) + r'$ v_{z} > 0$' + '\n' + '{:.2f} $\%$ particles with $ x > 0 $ have '.format(neg) + r'$ v_{z} < 0$'
+		ax_V[i].plot(0.,0., color='black', marker='o', markersize=0.15, ls='', label=string_label)
+
 	ax_V[i].legend(frameon=True,loc=1)
 	cbar_V[i].ax.set_yticklabels(['$ < 0 $', '$ > 0 $']) 
 	ax_V[i].set_xlabel(axis_n[k]  + '[pc]')
@@ -965,7 +974,7 @@ ax_D.set_xscale('log')
 ax_D.set_yscale('log')
 
 R_remn = np.copy(X[:,0,tt])
-R_remn = R_remn[R_remn < r_75_end]
+R_remn = R_remn[R_remn < r_73_end]
 
 tt = -1
 m_i = M[0,tt]
@@ -1018,6 +1027,7 @@ perr = np.sqrt(np.diag(pcov))
 aa = popt[0]
 ea = perr[0]
 ax_D.plot(R_log_c[cut], rho_plummer_b(R_log_c[cut],aa), color='lightcoral', lw=0.85, label='Plummer Fit:\n'+r'$a=$\,'+'({:.4f} '.format(aa)+r'$\pm$'+' {:.4f}) pc'.format(ea)+'\n'+r'$M=$\,'+r'$73\% \,M_0 = 7.3 \cdot 10^3 \, M_{\odot}$')
+ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1, label='Simulation Data at '+r'$t_{end}$')
 
 ax_D.legend(frameon=True, loc=3)
 fig_D.tight_layout()
@@ -1060,7 +1070,7 @@ ax_h_Th = fig_h.add_subplot(gs[1,2:3])
 
 
 R_bins = np.logspace(oom_r_min_tt, oom_r_max_tt, 41)
-ax_h_R.hist(R[R < r_75_end], bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+ax_h_R.hist(R[R < r_73_end], bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_plum, npar=1)
 ax_h_R.set_xscale('log')
 
@@ -1075,7 +1085,7 @@ ax_h_R.set_ylim(None,None)
 ax_h_R.grid(ls=':',which='both')
 
 Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12)
-ax_h_Th.hist(Th[R < r_75_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+ax_h_Th.hist(Th[R < r_73_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
 ax_h_Th.set_title('Position-space'+'\n'+'Polar angle pdf',fontsize=10)
 ax_h_Th.set_xlabel(r'$\vartheta \;$[rad]')
@@ -1085,7 +1095,7 @@ ax_h_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.
 ax_h_Th.grid(ls=':',which='both')
 
 Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24)
-ax_h_Ph.hist(Ph[R < r_75_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+ax_h_Ph.hist(Ph[R < r_73_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
 ax_h_Ph.set_title('Position-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
 ax_h_Ph.set_xlabel(r'$\varphi \;$[rad]')
@@ -1108,7 +1118,7 @@ print()
 tt = -1
 R_remn = np.copy(X[:,0,tt])
 V_remn = np.copy(V[:,0,tt])
-V_remn = V_remn[R_remn < r_75_end]
+V_remn = V_remn[R_remn < r_73_end]
 
 m_i = M[0,tt]
 v_min_tt = np.amin( V_remn )
@@ -1141,8 +1151,8 @@ ax_v_Ph = fig_v.add_subplot(gs[1,0:2])
 ax_v_Th = fig_v.add_subplot(gs[1,2:3])
 
 
-V_bins = np.logspace(oom_r_min_tt, oom_r_max_tt, 41)
-ax_v_V.hist(P[R < r_75_end], bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+V_bins = np.logspace(oom_v_min_tt, oom_v_max_tt, 41)
+ax_v_V.hist(P[R < r_73_end], bins=V_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 # histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_hern_r, npar=1)
 ax_v_V.set_xscale('log')
 
@@ -1157,7 +1167,7 @@ ax_v_V.set_ylim(None,None)
 ax_v_V.grid(ls=':',which='both')
 
 Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12)
-ax_v_Th.hist(Th[R < r_75_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+ax_v_Th.hist(Th[R < r_73_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_v_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
 ax_v_Th.set_title('Velocity-space'+'\n'+'Polar angle pdf',fontsize=10)
 ax_v_Th.set_xlabel(r'$\vartheta \;$[rad]')
@@ -1167,7 +1177,7 @@ ax_v_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.
 ax_v_Th.grid(ls=':',which='both')
 
 Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24)
-ax_v_Ph.hist(Ph[R < r_75_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+ax_v_Ph.hist(Ph[R < r_73_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_v_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
 ax_v_Ph.set_title('Velocity-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
 ax_v_Ph.set_xlabel(r'$\varphi \;$[rad]')
