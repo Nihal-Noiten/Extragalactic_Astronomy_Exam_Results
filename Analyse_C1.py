@@ -480,40 +480,19 @@ for t in range(NT):
 		l_mean[t]  += l[i,0,t] / I
 	l_tot[0,t] = np.sqrt(l_tot[1,t]**2 + l_tot[2,t]**2 + l_tot[3,t]**2) / I
 
-# Compute mean angular momentum at the lagrangian radii - OBSOLETE (it varies too much for a decent plot)
 
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
-
+l_inf = 0.9 * np.amin(l_tot[0,:])
 ax_l.grid(linestyle=':',which='both')
 ax_l.set_xlim(0, t_max)
-ax_l.set_ylim(1e-1,2e1)
-ax_l.set_title('Average angular momentum as a function of time\n',fontsize=10)
+ax_l.set_ylim(l_inf,20.)		# (1e-1,1e1)
+# ax_L.set_aspect(t_max / 2.)
+ax_l.set_title('Average angular momentum as a function of time \n', fontsize=10)
 ax_l.set_xlabel(r'$t\;$[Myr]')
 ax_l.set_ylabel(r'$l\;$[pc km/s]')
 ax_l.set_yscale('log')
 
-'''
-for k in [0,2,4,6,8]: # range(9):
-	ax_l.plot(T, l_averaged[k,0,:], ls=':', label=r'$\langle l(r=R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
-'''
 
-ax_l.plot(T, l_tot[0,:], color='black', label=r'$|\,\vec{l}_{tot} \,| = \frac{1}{N} \sum_i{\vec{l}_i}\,|$')
+ax_l.plot(T, l_tot[0,:], color='black', label=r'$|\,\vec{l}_{tot} \,| = \frac{1}{N} \,|\sum_i{\vec{l}_i}\,|$')
 ax_l.plot(T, l_mean, color='black' , ls='--', label=r'$\langle \,|\,\vec{l}\,|\, \rangle  = \frac{1}{N} \sum_i{|\vec{l}_i\,|}$')
 ax_l.vlines(T_collapse, ymin=1e-1, ymax=2e1, linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
@@ -552,7 +531,7 @@ for rep in range(10):
 		R70[t] = C[int(np.ceil(I/100*70))]
 	
 	for t in range(NT):
-		for i in range(I-1):
+		for i in range(I):
 			if X[i,0,t] < R70[t]:
 				for j in range(3):
 					X_cm[j+1,t] += X[i,j+1,t] * M[i,t]
@@ -784,45 +763,22 @@ for t in range(NT):
 			l_mean[t] += l[i,0,t]
 	l_mean[t] = l_mean[t] / H
 
-'''
-l_averaged = np.zeros((9,4,NT))
-for k in range(9):
-	for t in range(NT):
-		C = np.copy(X[0:I-1,0,t])
-		D1 = np.copy(l[0:I-1,1,t])
-		D2 = np.copy(l[0:I-1,2,t])
-		D3 = np.copy(l[0:I-1,3,t])
-		sort_index = np.argsort(C)
-		D1 = D1[sort_index]
-		D2 = D2[sort_index]
-		D3 = D3[sort_index]
-		for j in range(200):
-			i_new = int(np.ceil(I/10*(k+1))-100+j)
-			l_averaged[k,1,t] += D1[i_new] / 200 
-			l_averaged[k,2,t] += D1[i_new] / 200 
-			l_averaged[k,3,t] += D1[i_new] / 200 
-		l_averaged[k,0,t] = np.sqrt( l_averaged[k,1,t]**2 + l_averaged[k,2,t]**2 + l_averaged[k,3,t]**2 )
-'''
-
+l_inf = 0.9 * np.amin(l_tot[0,:])
 ax_L.grid(linestyle=':',which='both')
 ax_L.set_xlim(0, t_max)
-ax_L.set_ylim(0,2)		# (1e-1,1e1)
-ax_L.set_aspect(t_max / 2.)
-ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n',fontsize=10)
+ax_L.set_ylim(l_inf,2)		# (1e-1,1e1)
+# ax_L.set_aspect(t_max / 2.)
+ax_L.set_title('Average angular momentum as a function of time - Remnant R.F.\n', fontsize=10)
 ax_L.set_xlabel(r'$t\;$[Myr]')
 ax_L.set_ylabel(r'$l\;$[pc km/s]')
-# ax_L.set_yscale('log')
+ax_L.set_yscale('log')
 
-'''
-for k in [0,2,4,6,8]: # range(9):
-	ax_L.plot(T, l_averaged[k,0,:], ls=':', label=r'$\langle l(r=R_{Lag}^{' + '{:d}'.format(int(10*(k+1))) + r'\%})\rangle$')
-'''
-ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = |\frac{1}{N} \sum_i{\,\vec{l}_i}\,|$")
+ax_L.plot(T, l_tot[0,:], color='black', label=r"$|\,\vec{l}_{tot} \,| = \frac{1}{N} \,|\sum_i{\,\vec{l}_i}\,|$")
 ax_L.plot(T, l_mean, color='black' , ls='--', label=r"$\langle \,|\,\vec{l}'\,|\, \rangle  = \frac{1}{N} \sum_i{|\,\vec{l}_i'\,|}$")
 
-ax_L.vlines(T_collapse, ymin=0., ymax=20., linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
+ax_L.vlines(T_collapse, ymin=l_inf, ymax=2., linestyle=':', color='black', label=r'$T_{coll} = \sqrt{\frac{3\pi}{32 G \rho_{0}}}$')
 
-ax_L.legend(frameon=True, loc=1)
+ax_L.legend(frameon=True, loc=7)
 fig_L.tight_layout()
 
 fig_L.savefig("C1_Results_PNG/Angular_Momentum_CMRF_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
@@ -1001,7 +957,7 @@ for i in range(len(V_log)-1):
 	D_log.append( histo_D[i] * m_i / V_log[i+1] )
 D_log = np.array(D_log)
 
-ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1)
+ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1, label='Simulation Data at '+r'$t_{end}$')
 
 print()
 print('Fig saved: Density profile, RF CM')
@@ -1026,7 +982,7 @@ perr = np.sqrt(np.diag(pcov))
 aa = popt[0]
 ea = perr[0]
 ax_D.plot(R_log_c[cut], rho_plummer_b(R_log_c[cut],aa), color='lightcoral', lw=0.85, label='Plummer Fit:\n'+r'$a=$\,'+'({:.4f} '.format(aa)+r'$\pm$'+' {:.4f}) pc'.format(ea)+'\n'+r'$M=$\,'+r'$73\% \,M_0 = 7.3 \cdot 10^3 \, M_{\odot}$')
-ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1, label='Simulation Data at '+r'$t_{end}$')
+ax_D.plot(R_log_c, D_log, color='black', ls='', marker='o', markersize=1)
 
 ax_D.legend(frameon=True, loc=3)
 fig_D.tight_layout()
@@ -1041,7 +997,7 @@ print()
 ##################################################################################################
 ##################################################################################################
 
-# PLOT COORDINATE-SPACE HISTOGRAMS TO CHECK IF THE REMNANT HAS A SPHERICAL SYMMETRY
+# PLOT COORDINATE-SPACE HISTOGRAMS TO CHECK IF THE REMNANT HAS A SPHERICAL SYMMETRY ##### t = end
 
 tt = -1
 
@@ -1049,7 +1005,7 @@ r_step = (r_max_tt - r_min_tt) / 40.
 ph_lim  = 2. * np.pi
 ph_step = np.pi / 12.
 th_lim  = np.pi
-th_step = np.pi / 12.
+th_step = np.pi / 11.
 
 R  = np.zeros(I)
 Th = np.zeros(I)
@@ -1070,7 +1026,7 @@ ax_h_Th = fig_h.add_subplot(gs[1,2:3])
 
 R_bins = np.logspace(oom_r_min_tt, oom_r_max_tt, 41)
 ax_h_R.hist(R[R < r_73_end], bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
-histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_plum, npar=1)
+# histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_plum, npar=1)
 ax_h_R.set_xscale('log')
 
 # R_bins = np.linspace(r_min_tt, r_max_tt, 41)
@@ -1083,7 +1039,7 @@ ax_h_R.set_xlim(r_min_tt, r_max_tt)
 ax_h_R.set_ylim(None,None)
 ax_h_R.grid(ls=':',which='both')
 
-Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12)
+Th_bins = np.linspace(start=0, stop=th_lim, num=12)
 ax_h_Th.hist(Th[R < r_73_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
 ax_h_Th.set_title('Position-space'+'\n'+'Polar angle pdf',fontsize=10)
@@ -1093,7 +1049,7 @@ ax_h_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
 ax_h_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
 ax_h_Th.grid(ls=':',which='both')
 
-Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24)
+Ph_bins = np.linspace(start=0,stop=ph_lim, num=25)
 ax_h_Ph.hist(Ph[R < r_73_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_h_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
 ax_h_Ph.set_title('Position-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
@@ -1103,8 +1059,8 @@ ax_h_Ph.xaxis.set_major_locator(plt.MultipleLocator(np.pi / 4))
 ax_h_Ph.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
 ax_h_Ph.grid(ls=':',which='both')
 
-fig_h.savefig("C1_Results_PNG/Histograms_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
-fig_h.savefig("C1_Results_EPS/Histograms_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+fig_h.savefig("C1_Results_PNG/Histograms_R_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_h.savefig("C1_Results_EPS/Histograms_R_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
 print()
 print('Fig saved: Histograms, RF CM')
 print()
@@ -1112,7 +1068,7 @@ print()
 ##################################################################################################
 ##################################################################################################
 
-# PLOT VELOCITY-SPACE HISTOGRAMS TO CHECK WHETHER THE REMNANT IS ISOTROPIC
+# PLOT VELOCITY-SPACE HISTOGRAMS TO CHECK WHETHER THE REMNANT IS ISOTROPIC ##### t = end
 
 tt = -1
 R_remn = np.copy(X[:,0,tt])
@@ -1129,7 +1085,7 @@ v_step = (v_max_tt - v_min_tt) / 40.
 ph_lim  = 2. * np.pi
 ph_step = np.pi / 12.
 th_lim  = np.pi
-th_step = np.pi / 12.
+th_step = np.pi / 11.
 
 R  = np.zeros(I)
 P  = np.zeros(I)
@@ -1152,20 +1108,14 @@ ax_v_Th = fig_v.add_subplot(gs[1,2:3])
 
 V_bins = np.logspace(oom_v_min_tt, oom_v_max_tt, 41)
 ax_v_V.hist(P[R < r_73_end], bins=V_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
-# histo_pdf_plotter_log(ax=ax_h_R, x_min=r_min_tt, x_max=r_max_tt, x_bins=R_bins, func=pdf_hern_r, npar=1)
 ax_v_V.set_xscale('log')
-
-# R_bins = np.linspace(r_min_tt, r_max_tt, 41)
-# ax_h_R.hist(R, bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
-# histo_pdf_plotter(ax=ax_h_R, x_min=r_min_tt, x_lim=r_max_tt, x_step=r_step, x_bins=R_bins, func=pdf_hern_r, npar=1)
-
 ax_v_V.set_title('Velocity-space'+'\n'+'Velocity module pdf',fontsize=10)
 ax_v_V.set_xlabel(r'$v\;$[km/s]')
 ax_v_V.set_xlim(v_min_tt, v_max_tt)
 ax_v_V.set_ylim(None,None)
 ax_v_V.grid(ls=':',which='both')
 
-Th_bins = np.linspace(start=0, stop=th_lim+0.1*th_step, num=12)
+Th_bins = np.linspace(start=0, stop=th_lim, num=12)
 ax_v_Th.hist(Th[R < r_73_end], bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_v_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
 ax_v_Th.set_title('Velocity-space'+'\n'+'Polar angle pdf',fontsize=10)
@@ -1175,7 +1125,7 @@ ax_v_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
 ax_v_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
 ax_v_Th.grid(ls=':',which='both')
 
-Ph_bins = np.linspace(start=0,stop=ph_lim+0.1*ph_step, num=24)
+Ph_bins = np.linspace(start=0, stop=ph_lim, num=25)
 ax_v_Ph.hist(Ph[R < r_73_end], bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
 histo_pdf_plotter(ax=ax_v_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
 ax_v_Ph.set_title('Velocity-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
@@ -1188,6 +1138,159 @@ ax_v_Ph.grid(ls=':',which='both')
 fig_v.tight_layout()
 fig_v.savefig("C1_Results_PNG/Histograms_V_t_end_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
 fig_v.savefig("C1_Results_EPS/Histograms_V_t_end_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+
+time_prog_end = timer()
+
+print("Total running time [hh/mm/ss] = {:}".format(datetime.timedelta(seconds = time_prog_end - time_prog_start)))
+print()
+
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+
+# PLOT COORDINATE-SPACE HISTOGRAMS TO CHECK IF THE REMNANT HAS A SPHERICAL SYMMETRY ##### t = 0
+
+tt = 0
+r_min_tt = 0.
+r_max_tt = 5.
+r_step = (r_max_tt - r_min_tt) / 40.
+ph_lim  = 2. * np.pi
+ph_step = np.pi / 12.
+th_lim  = np.pi
+th_step = np.pi / 11.
+
+
+
+R  = np.zeros(I)
+Th = np.zeros(I)
+Ph = np.zeros(I)
+for i in range(I):
+	R[i]  = X[i,0,tt]
+	Ph[i] = np.arctan2( X[i,2,tt] , X[i,1,tt])
+	if Ph[i] < 0.:
+		Ph[i] += 2. * np.pi
+	Th[i] = np.arccos( X[i,3,tt] / X[i,0,tt])
+
+fig_h = plt.figure(figsize=(7,6), constrained_layout=True)
+gs = GridSpec(2, 3, figure=fig_h)
+ax_h_R  = fig_h.add_subplot(gs[0,0:3])
+ax_h_Ph = fig_h.add_subplot(gs[1,0:2])
+ax_h_Th = fig_h.add_subplot(gs[1,2:3])
+
+
+R_bins = np.linpace(r_min_tt, r_max_tt, 41)
+ax_h_R.hist(R, bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+ax_h_R.hist(R, bins=R_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_h_R, x_min=r_min_tt, x_lim=r_max_tt, x_step=r_step, x_bins=R_bins, func=pdf_r, npar=1)
+
+ax_h_R.set_title('Position-space'+'\n'+'Radius pdf',fontsize=10)
+ax_h_R.set_xlabel(r'$r\;$[pc]')
+ax_h_R.set_xlim(r_min_tt, r_max_tt)
+ax_h_R.set_ylim(None,None)
+ax_h_R.grid(ls=':',which='both')
+
+Th_bins = np.linspace(start=0, stop=th_lim, num=12)
+ax_h_Th.hist(Th, bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_h_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
+ax_h_Th.set_title('Position-space'+'\n'+'Polar angle pdf',fontsize=10)
+ax_h_Th.set_xlabel(r'$\vartheta \;$[rad]')
+ax_h_Th.set_xlim(0,th_lim)
+ax_h_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
+ax_h_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_h_Th.grid(ls=':',which='both')
+
+Ph_bins = np.linspace(start=0,stop=ph_lim, num=25)
+ax_h_Ph.hist(Ph, bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_h_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
+ax_h_Ph.set_title('Position-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
+ax_h_Ph.set_xlabel(r'$\varphi \;$[rad]')
+ax_h_Ph.set_xlim(0,ph_lim)
+ax_h_Ph.xaxis.set_major_locator(plt.MultipleLocator(np.pi / 4))
+ax_h_Ph.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_h_Ph.grid(ls=':',which='both')
+
+fig_h.savefig("C1_Results_PNG/Histograms_R_t_ini_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_h.savefig("C1_Results_EPS/Histograms_R_t_ini_CM_{:}.eps".format(plotfile), bbox_inches='tight')
+print()
+print('Fig saved: Histograms, RF CM')
+print()
+
+##################################################################################################
+##################################################################################################
+
+# PLOT VELOCITY-SPACE HISTOGRAMS TO CHECK WHETHER THE REMNANT IS ISOTROPIC #####  t = 0
+
+tt = 0
+R_remn = np.copy(X[:,0,tt])
+V_remn = np.copy(V[:,0,tt])
+V_remn = V_remn
+
+m_i = M[0,tt]
+v_min_tt = np.amin( V_remn )
+v_max_tt = np.amax( V_remn )
+oom_v_min_tt = np.log10( v_min_tt )
+oom_v_max_tt = np.log10( v_max_tt )
+
+v_step = (v_max_tt - v_min_tt) / 40.
+ph_lim  = 2. * np.pi
+ph_step = np.pi / 12.
+th_lim  = np.pi
+th_step = np.pi / 11.
+
+R  = np.zeros(I)
+P  = np.zeros(I)
+Th = np.zeros(I)
+Ph = np.zeros(I)
+for i in range(I):
+	R[i]  = X[i,0,tt]
+	P[i]  = V[i,0,tt]
+	Ph[i] = np.arctan2( V[i,2,tt] , V[i,1,tt])
+	if Ph[i] < 0.:
+		Ph[i] += 2. * np.pi
+	Th[i] = np.arccos( V[i,3,tt] / V[i,0,tt])
+
+fig_v = plt.figure(figsize=(7,6), constrained_layout=True)
+gs = GridSpec(2, 3, figure=fig_h)
+ax_v_V  = fig_v.add_subplot(gs[0,0:3])
+ax_v_Ph = fig_v.add_subplot(gs[1,0:2])
+ax_v_Th = fig_v.add_subplot(gs[1,2:3])
+
+
+V_bins = np.logspace(oom_v_min_tt, oom_v_max_tt, 41)
+ax_v_V.hist(P, bins=V_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+ax_v_V.set_xscale('log')
+
+ax_v_V.set_title('Velocity-space'+'\n'+'Velocity module pdf',fontsize=10)
+ax_v_V.set_xlabel(r'$v\;$[km/s]')
+ax_v_V.set_xlim(v_min_tt, v_max_tt)
+ax_v_V.set_ylim(None,None)
+ax_v_V.grid(ls=':',which='both')
+
+Th_bins = np.linspace(start=0, stop=th_lim, num=12)
+ax_v_Th.hist(Th, bins=Th_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_v_Th, x_lim=th_lim, x_step=th_step, x_bins=Th_bins, func=pdf_th, npar=0)
+ax_v_Th.set_title('Velocity-space'+'\n'+'Polar angle pdf',fontsize=10)
+ax_v_Th.set_xlabel(r'$\vartheta \;$[rad]')
+ax_v_Th.set_xlim(0,th_lim)
+ax_v_Th.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 4))
+ax_v_Th.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_v_Th.grid(ls=':',which='both')
+
+Ph_bins = np.linspace(start=0,stop=ph_lim, num=25)
+ax_v_Ph.hist(Ph, bins=Ph_bins, color='lightgrey', alpha=1, edgecolor='black', density=True)
+histo_pdf_plotter(ax=ax_v_Ph, x_lim=ph_lim, x_step=ph_step, x_bins=Ph_bins, func=pdf_ph, npar=0)
+ax_v_Ph.set_title('Velocity-space'+'\n'+'Azimuthal angle pdf',fontsize=10)
+ax_v_Ph.set_xlabel(r'$\varphi \;$[rad]')
+ax_v_Ph.set_xlim(0,ph_lim)
+ax_v_Ph.xaxis.set_major_locator(plt.MultipleLocator(np.pi / 4))
+ax_v_Ph.xaxis.set_major_formatter(FuncFormatter(lambda val,pos: '{:.2f}$\,\pi$'.format(val/np.pi) if val !=0 else '0'))
+ax_v_Ph.grid(ls=':',which='both')
+
+fig_v.tight_layout()
+fig_v.savefig("C1_Results_PNG/Histograms_V_t_ini_CM_{:}.png".format(plotfile), bbox_inches='tight', dpi=400)
+fig_v.savefig("C1_Results_EPS/Histograms_V_t_ini_CM_{:}.eps".format(plotfile), bbox_inches='tight')
 
 time_prog_end = timer()
 

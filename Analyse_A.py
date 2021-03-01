@@ -1029,7 +1029,7 @@ ax_L.set_ylabel(r'$l\;$[pc km/s]') # , rotation='horizontal', horizontalalignmen
 ax_L.plot(T, l_tot[0,:], color='khaki', label=r"Case 3: $|\,\vec{l}_{tot} \,| $") 
 ax_L.plot(T, l_mean, color='khaki' , ls='--', label=r"Case 3: $\langle \,|\,\vec{l}'\,|\, \rangle $")  # = \frac{1}{N} \sum_i{|\vec{r}_i\times \vec{v}_i\,|}
 
-ax_L.legend(frameon=True, loc=7) #, bbox_to_anchor=(1.01,1)) 
+ax_L.legend(frameon=True, bbox_to_anchor=(1.04,0.5), loc='center left') #, bbox_to_anchor=(1.01,1)) 
 
 ##################################################################################################
 ##################################################################################################
